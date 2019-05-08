@@ -6,15 +6,11 @@
 using namespace std;
 using namespace LBK;
 
-
-
-
 OptimizerUtils::OptimizerUtils(float lambda, float tau, float iter)
 {
 	OptimizerUtils::lambda = lambda;
 	OptimizerUtils::tau = tau;
 	OptimizerUtils::iter = iter;
-	OptimizerUtils::Qmax = Qmax;
 }
 
 

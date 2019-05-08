@@ -1,13 +1,11 @@
-#include <iostream>
-#include <math.h>
 #include <ICEMG.hpp>
-#include <eigen3/Eigen/Dense>
 
 using namespace std;
 using namespace LBK;
 
 // battery configuration
 float MG::Qmax = 3200;
+float MG::SOC=0.6;
 
 MG::MG(float Voc, float Rint, float P_bat)
 {

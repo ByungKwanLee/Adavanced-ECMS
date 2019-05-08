@@ -1,4 +1,6 @@
 #include <iostream>
+#include <eigen3/Eigen/Dense>
+#include <math.h>
 
 namespace LBK
 {
@@ -24,7 +26,9 @@ public:
 	float Rint;
 	float P_bat;
 	static float Qmax;
-	
+	static float SOC;
+
+	MG();
 	MG(float Voc, float Rint, float P_bat);
 	float SOC_rate();
 

@@ -18,8 +18,7 @@ private:
 	
 
 public:
-	static float Qmax;
-	OptimizerUtils(){};
+	OptimizerUtils();
 	OptimizerUtils(float lambda, float tau, float iter);
 	
 	float Hamiltonian();
