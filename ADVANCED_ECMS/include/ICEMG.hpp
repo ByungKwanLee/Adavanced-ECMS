@@ -1,6 +1,7 @@
 #include <iostream>
 #include <eigen3/Eigen/Dense>
 #include <math.h>
+#include <vector>
 
 namespace LBK
 {

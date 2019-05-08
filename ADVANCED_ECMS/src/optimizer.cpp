@@ -13,7 +13,6 @@ OptimizerUtils::OptimizerUtils(float lambda, float tau, float iter)
 	OptimizerUtils::iter = iter;
 }
 
-
 float OptimizerUtils::Costmodeling()
 {
 // using lagrangian method cost and ADMM cost
