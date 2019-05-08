@@ -35,6 +35,8 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}_lib
    src/optimizer.cpp
+   src/VehicleInfo.cpp
+   src/ICEMG.cpp
 )
 
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

@@ -1,4 +1,4 @@
-#include<iostream>
+#include <iostream>
 #include <optimizer.hpp>
 #include <math.h>
 
@@ -10,7 +10,7 @@ int main(){
 	float lambda = 0.1;
 	float tau = 1/pow(lambda,2);
 	float iter = 100.;
-
-	OptimizerUtils bird(lambda, tau, iter);
-	cout << bird.Qmax << endl;
+	VehicleInfo vehicle_info;
+	// OptimizerUtils bird(lambda, tau, iter);
+	cout << vehicle_info.Frl() << endl;
 }
