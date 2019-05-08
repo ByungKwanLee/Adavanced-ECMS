@@ -16,7 +16,7 @@ using namespace std;
 using namespace LBK;
 
 int main(){
-	vector<vector<float>> array = get_2d_data("src/ADVANCED_ECMS/data/example.csv");
+	vector<float> array = get_1d_data("src/ADVANCED_ECMS/data/example.csv");
 	float lambda = 0.1;
 	float tau = 1/pow(lambda,2);
 	float iter = 100.;

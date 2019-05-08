@@ -16,34 +16,34 @@ vector<float> get_1d_data(string file_name)
     // string object
     string line, field;
 
-    // change type from string to float
-    vector<float> v_float;
+    
     vector<string> v_string;
     
     // get next line in file
-    while ( getline(in, line) )    
+    getline(in, line);
+    v_string.clear();
+    stringstream ss(line);
+
+    // break line into comma delimitted fields
+    while (getline(ss,field,','))  
     {
-        v_string.clear();
-        stringstream ss(line);
-
-        // break line into comma delimitted fields
-        while (getline(ss,field,','))  
-        {
-            // add each field to the 1D array
-            v_string.push_back(field);
-        }
-
-        std::transform(v_string.begin(), v_string.end(), v_float.begin(), [](const std::string& val)
-        {
-            return std::stod(val);
-        });
+        // add each field to the 1D array
+        v_string.push_back(field);
     }
+    
+    // change type from string to float
+    vector<float> v_float(v_string.size());
+    std::transform(v_string.begin(), v_string.end(), v_float.begin(), [](const std::string& val)
+    {
+        return std::stod(val);
+    });
 
     // print out what was read in
     for (size_t i=0; i<v_float.size(); ++i)
     {
         cout << v_float[i] << "|"; 
     }
+    cout << "\n";
 
     return v_float;
 }
