@@ -9,11 +9,16 @@ class VehicleInfo
 {
 
 public:
+	// variable
 	static float velocity;
 	static float accel;
-	float parameter[3];
-	float Frl();
-	VehicleInfo();
+	static float mass;  // [kg]
+	static float parameter[3];
+	static float wheel_radius;
+
+	// calculation function
+	static float Frl();
+	static float P_d();
 	
 };
 
