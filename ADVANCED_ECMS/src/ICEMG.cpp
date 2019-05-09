@@ -65,12 +65,22 @@ float interp_Tool::interpolate_1d(vector<float> & xData, vector<float> & yData,
 
 
 float interp_Tool::interpolate_2d(vector<float> & xData, vector<float> & yData, vector<vector<float>> & zData, 
-	vector<float> x, vector<float> y)
+	float x, float y)
 {
    int x_size = xData.size();
    int y_size = yData.size();
+   std::for_each(xData.begin(), xData.end(), [x](float& d) { d-=x;});
+
    int min_ind    =  std::min_element(xData.begin(), xData.end()) - xData.begin();
    float min_data = *std::min_element(xData.begin(), xData.end());
+
+   
+   
+   for(vector<float>::iterator it = xData.begin(); it != xData.end(); it++)
+   {
+   		cout << *it << endl;
+   }
+
 
 
 }
