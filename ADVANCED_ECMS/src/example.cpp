@@ -19,10 +19,13 @@ using namespace LBK;
 
 int main(){
 
+
+   float * p =interp_Tool::interpolate_2d(MG::MG_mapRPM, MG::MG_mapTrq, MG::MG_mapData, 201, 300);
+
 	float lambda = 0.1;
 	float tau = 1/pow(lambda,2);
 	float iter = 100.;
 
-
-	cout << VehicleInfo::P_d() << endl;
+	cout << p[0] << ", " << p[1] << endl;
+    delete[] p;
 }

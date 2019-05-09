@@ -20,10 +20,10 @@ vector<float> MG::Bat_indexVoc = get_1d_data("src/ADVANCED_ECMS/data/Bat_indexVo
 vector<float> MG::Bat_indexSoc = get_1d_data("src/ADVANCED_ECMS/data/Bat_indexSOC");
 vector<float> MG::Bat_indexRint = get_1d_data("src/ADVANCED_ECMS/data/Bat_indexRint");
 
-vector<float> MG_mapTrq = get_1d_data("src/ADVANCED_ECMS/data/MG_mapTrq");
-vector<float> MG_mapRPM = get_1d_data("src/ADVANCED_ECMS/data/MG_mapRPM");
-vector<float> MG_maxTrq = get_1d_data("src/ADVANCED_ECMS/data/MG_maxTrq");
-vector<float> MG_maxRPM = get_1d_data("src/ADVANCED_ECMS/data/MG_maxRPM");
+vector<float> MG::MG_mapTrq = get_1d_data("src/ADVANCED_ECMS/data/MG_mapTrq");
+vector<float> MG::MG_mapRPM = get_1d_data("src/ADVANCED_ECMS/data/MG_mapRPM");
+vector<float> MG::MG_maxTrq = get_1d_data("src/ADVANCED_ECMS/data/MG_maxTrq");
+vector<float> MG::MG_maxRPM = get_1d_data("src/ADVANCED_ECMS/data/MG_maxRPM");
 vector<vector<float>> MG::MG_mapData = get_2d_data("src/ADVANCED_ECMS/data/MG_mapData");
 
 float MG::Rint = MG::Bat_NumCell * interp_Tool::interpolate_1d(MG::Bat_indexSoc, MG::Bat_indexVoc,  MG::SOC, false);
@@ -64,23 +64,40 @@ float interp_Tool::interpolate_1d(vector<float> & xData, vector<float> & yData,
 }
 
 
-float interp_Tool::interpolate_2d(vector<float> & xData, vector<float> & yData, vector<vector<float>> & zData, 
+float* interp_Tool::interpolate_2d(vector<float> & xData, vector<float> & yData, vector<vector<float>> & zData, 
 	float x, float y)
 {
-   int x_size = xData.size();
-   int y_size = yData.size();
-   std::for_each(xData.begin(), xData.end(), [x](float& d) { d-=x;});
+	int x_size = xData.size();
+	int y_size = yData.size();
 
-   int min_ind    =  std::min_element(xData.begin(), xData.end()) - xData.begin();
-   float min_data = *std::min_element(xData.begin(), xData.end());
+	vector<float> xData_(xData.begin(), xData.end()), yData_(yData.begin(), yData.end());
+	std::for_each(xData_.begin(), xData_.end(), [x](float& d) { d-=x; d=abs(d);});
+	std::for_each(yData_.begin(), yData_.end(), [y](float& d) { d-=y; d=abs(d);});
 
-   
-   
-   for(vector<float>::iterator it = xData.begin(); it != xData.end(); it++)
-   {
-   		cout << *it << endl;
-   }
+	int min_ind_x    =  std::min_element(xData_.begin(), xData_.end()) - xData_.begin();
+	float min_data_x = *std::min_element(xData_.begin(), xData_.end());
+	xData_[min_ind_x]=pow(2,100);
+	int sec_ind_x    =  std::min_element(xData_.begin(), xData_.end()) - xData_.begin();
+	float sec_data_x = *std::min_element(xData_.begin(), xData_.end());
 
+	int min_ind_y    =  std::min_element(yData_.begin(), yData_.end()) - yData_.begin();
+	float min_data_y = *std::min_element(yData_.begin(), yData_.end());
+	yData_[min_ind_y]=pow(2,100);
+	int sec_ind_y    =  std::min_element(yData_.begin(), yData_.end()) - yData_.begin();
+	float sec_data_y = *std::min_element(yData_.begin(), yData_.end());
 
+	float interpol_y =min_data_x*(min_data_y*zData[min_ind_x][min_ind_y] + sec_data_y*zData[min_ind_x][sec_ind_y])/(min_data_y+sec_data_y) 
+	+ sec_data_x*(min_data_y*zData[sec_ind_x][min_ind_y]  + sec_data_y*zData[sec_ind_x][sec_ind_y])/(min_data_y+sec_data_y);
+	interpol_y/=(min_data_x+sec_data_x);
+
+	float interpol_x = min_data_y*(min_data_x*zData[min_ind_x][min_ind_y]  + sec_data_x*zData[sec_ind_x][min_ind_y])/(min_data_x+sec_data_x)
+	+ sec_data_y*(min_data_x*zData[min_ind_x][sec_ind_y]  + sec_data_x*zData[sec_ind_x][sec_ind_y])/(min_data_x+sec_data_x);
+	interpol_x/=(min_data_y+sec_data_y);
+
+	float *p = new float[2];
+	p[0] = interpol_x;
+	p[1] = interpol_y;
+
+	return p;
 
 }
