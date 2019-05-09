@@ -9,7 +9,7 @@
 
 using namespace std;
 
-vector<float> get_1d_data(string file_name)
+vector<float> get_1d_data(string file_name, bool print = false)
 {
     ifstream in(file_name);
 
@@ -38,18 +38,22 @@ vector<float> get_1d_data(string file_name)
         return std::stod(val);
     });
 
-    // print out what was read in
-    for (size_t i=0; i<v_float.size(); ++i)
+    if(print)
     {
-        cout << v_float[i] << "|"; 
+        // print out what was read in
+        for (size_t i=0; i<v_float.size(); ++i)
+        {
+            cout << v_float[i] << "|"; 
+        }
+        cout << "\n";
     }
-    cout << "\n";
+    
 
     return v_float;
 }
 
 
-vector<vector<float>> get_2d_data(string file_name)
+vector<vector<float>> get_2d_data(string file_name, bool print = false)
 {
     ifstream in(file_name);
 
@@ -84,15 +88,19 @@ vector<vector<float>> get_2d_data(string file_name)
         v_float.clear();
     }
 
-    // print out what was read in
-    for (size_t i=0; i<array.size(); ++i)
+    if(print)
     {
-        for (size_t j=0; j<array[i].size(); ++j)
+        // print out what was read in
+        for (size_t i=0; i<array.size(); ++i)
         {
-            cout << array[i][j] << "|"; // (separate fields by |)
+            for (size_t j=0; j<array[i].size(); ++j)
+            {
+                cout << array[i][j] << "|"; // (separate fields by |)
+            }
+            cout << "\n";
         }
-        cout << "\n";
     }
+    
 
     return array;
 }

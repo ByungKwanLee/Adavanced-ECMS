@@ -1,5 +1,7 @@
 #include <iostream>
 #include <VehicleInfo.hpp>
+#include <vector>
+
 using namespace std;
 
 
@@ -7,7 +9,7 @@ namespace LBK
 {
 
 
-class OptimizerUtils
+class Optimizer
 {
 
 private:
@@ -15,17 +17,13 @@ private:
 	float tau;
 	float iter;
 	float Costmodeling();
-	
 
 public:
-	OptimizerUtils();
-	OptimizerUtils(float lambda, float tau, float iter);
+	Optimizer(float lambda, float tau, float iter);
 	
-	float Hamiltonian();
-	void Efficient_optimizer();
-
-
-
 };
 
+
+
 }
+

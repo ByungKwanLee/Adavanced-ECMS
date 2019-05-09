@@ -7,7 +7,7 @@ using namespace std;
 using namespace LBK;
 
 float VehicleInfo::velocity = 0;
-float VehicleInfo::accel=0;
+float VehicleInfo::accel = 0;
 
 VehicleInfo::VehicleInfo()
 {

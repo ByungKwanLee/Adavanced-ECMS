@@ -6,17 +6,10 @@
 using namespace std;
 using namespace LBK;
 
-OptimizerUtils::OptimizerUtils(float lambda, float tau, float iter)
+Optimizer::Optimizer(float lambda, float tau, float iter)
 {
-	OptimizerUtils::lambda = lambda;
-	OptimizerUtils::tau = tau;
-	OptimizerUtils::iter = iter;
+	Optimizer::lambda = lambda;
+	Optimizer::tau = tau;
+	Optimizer::iter = iter;
 }
-
-float OptimizerUtils::Costmodeling()
-{
-// using lagrangian method cost and ADMM cost
-}
-
-
 
