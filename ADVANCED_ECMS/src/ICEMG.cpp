@@ -13,7 +13,7 @@ const int Tool::NumGrid = 100;
 vector<float> ICE::TM_Ratio{4.212, 2.637, 1.8, 1.386, 1, 0.772 };
 Eigen::VectorXf ICE::TMR = Eigen::Map<Eigen::VectorXf> (ICE::TM_Ratio.data(), ICE::TM_Ratio.size()); // type casting from std to eigen
 
-float ICE::TM_Eff = 0.97;
+float ICE::TM_Eff = 0.9;
 float ICE::FD_EFF = 0.97;
 float ICE::FD_Ratio = 4.11;
 
@@ -24,6 +24,7 @@ vector<float> ICE::En_maxTrq = get_1d_data("src/ADVANCED_ECMS/data/En_maxTrq");
 vector<float> ICE::En_mapRPM = get_1d_data("src/ADVANCED_ECMS/data/En_mapRPM"); //to be added
 vector<float> ICE::En_mapTrq = get_1d_data("src/ADVANCED_ECMS/data/En_mapTrq");
 vector<vector<float>> ICE::En_mapData = get_2d_data("src/ADVANCED_ECMS/data/En_mapData");
+vector<vector<float>> ICE::En_FC = get_2d_data("src/ADVANCED_ECMS/data/En_FC");
 
 //  battery configuration
 float MG::SOC=0.6;
@@ -172,7 +173,7 @@ Eigen::MatrixXf Tool::FC_HEV()
 	for (int ind =0; ind < v.rows(); ind++)
 	{
 		for(int ind2=0; ind2 <v.cols(); ind2++){
-			v(ind, ind2) = interp_Tool::interpolate_2d(ICE::En_mapRPM, ICE::En_mapTrq, ICE::En_mapData, 
+			v(ind, ind2) = interp_Tool::interpolate_2d(ICE::En_mapRPM, ICE::En_mapTrq, ICE::En_FC, 
 				abs(ICE::Wi_HEV_rep(ind, ind2)), abs(ICE::Ti_HEV(ind, ind2)));
 		}
 	}

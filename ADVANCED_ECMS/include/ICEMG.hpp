@@ -27,6 +27,7 @@ public:
 	static vector<float> En_mapRPM;
 	static vector<float> En_mapTrq;
 	static vector<vector<float>> En_mapData;
+	static vector<vector<float>> En_FC;
 
 
 	// HEV
