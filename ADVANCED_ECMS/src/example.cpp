@@ -3,6 +3,7 @@
 #include <math.h>
 #include <data_loader.hpp>
 #include <ICEMG.hpp>
+#include <interp_tool.hpp>
 #include <typeinfo>  // typeid::name operator
 
 // getcwd
@@ -19,13 +20,9 @@ using namespace LBK;
 
 int main(){
 
-
-   float * p =interp_Tool::interpolate_2d(MG::MG_mapRPM, MG::MG_mapTrq, MG::MG_mapData, 201, 300);
-
+	cout << MG::P1elec_EV(0) << endl;
 	float lambda = 0.1;
 	float tau = 1/pow(lambda,2);
 	float iter = 100.;
 
-	cout << p[0] << ", " << p[1] << endl;
-    delete[] p;
 }
