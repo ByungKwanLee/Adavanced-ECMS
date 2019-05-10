@@ -80,9 +80,6 @@ public:
 	static Eigen::MatrixXf P1elec_HEV;
 	static Eigen::MatrixXf PbatD_HEV;
 	static Eigen::MatrixXf dSOC_HEV;
-
-	MG();
-	
 };
 
 class Tool
@@ -102,7 +99,7 @@ public :
 	static Eigen::MatrixXf T1_HEV_max(); // constraints
 	static float W1_EV_max(); //constraints
 	static Eigen::VectorXf T1_EV_max(); //constraints
-	
+
 	static Eigen::VectorXf Wi_HEV();
 	static Eigen::MatrixXf Wi_HEV_rep();
 	static Eigen::MatrixXf W1_HEV();
