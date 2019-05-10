@@ -93,14 +93,21 @@ public :
 	static Eigen::MatrixXf FC_HEV();
 	static Eigen::MatrixXf Ti_HEV();
 	static Eigen::VectorXf Ti_max();
-
 	static Eigen::VectorXf W1_EV();
 	static Eigen::VectorXf T1_EV();
+
+	static float Wi_HEV_min(); //constraints
+	static float Wi_HEV_max(); //constraints
+	static Eigen::MatrixXf Ti_HEV_max(); // constraints
+	static Eigen::MatrixXf T1_HEV_max(); // constraints
+	static float W1_EV_max(); //constraints
+	static Eigen::VectorXf T1_EV_max(); //constraints
+	
 	static Eigen::VectorXf Wi_HEV();
 	static Eigen::MatrixXf Wi_HEV_rep();
 	static Eigen::MatrixXf W1_HEV();
 	static Eigen::MatrixXf T1_HEV();
-	
+
 	static Eigen::VectorXf PbatD_EV();
 	static Eigen::MatrixXf PbatD_HEV();
 

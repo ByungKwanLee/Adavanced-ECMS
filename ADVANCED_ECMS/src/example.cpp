@@ -19,7 +19,7 @@ using namespace LBK;
 
 int main(){
 
-	cout << MG::PbatD_HEV.cols() << endl;
+	// cout <<  << endl;
 	
 	float lambda = 0.1;
 	float tau = 1/pow(lambda,2);
