@@ -24,23 +24,19 @@ public:
 	static vector<float> En_minTrq;
 	static vector<float> En_maxRPM;
 	static vector<float> En_maxTrq;
-
 	static vector<float> En_mapRPM;
 	static vector<float> En_mapTrq;
 	static vector<vector<float>> En_mapData;
 
 
 	// HEV
-	static float Wi_HEV;
-	static float Ti_min;
-	static float Ti_max;
-	static float Ti_HEV;
+	static Eigen::VectorXf Wi_HEV;
+	static Eigen::MatrixXf Wi_HEV_rep; // special
+	static Eigen::VectorXf Ti_max;
+	static Eigen::MatrixXf Ti_HEV;
 
 	// FC
-	static float FC_HEV;
-
-	// 
-	static void init_TM_Ratio();
+	static Eigen::MatrixXf FC_HEV;
 
 };
 
@@ -68,27 +64,53 @@ public:
 	static vector<float> MG_maxTrq;
 	static vector<float> MG_maxRPM;
 
-
 	// EV 
 	static Eigen::VectorXf W1_EV;
 	static Eigen::VectorXf T1_EV;
 	static Eigen::VectorXf Eta1_EV; // efficiency of motor power
 	static Eigen::VectorXf P1elec_EV;
-	static float PbatD_EV;
-	static float dSOC_EV;
+	static Eigen::VectorXf PbatD_EV;
+	static Eigen::VectorXf dSOC_EV;
 
 	// HEV
-	static float W1_HEV;
-	static float T1_HEV;
-	static float Eta1_HEV; // efficiency of motor power
-	static float P1elec_HEV;
-	static float PbatD_HEV;
-	static float dSOC_HEV;
+	static Eigen::MatrixXf W1_HEV;
+	static Eigen::MatrixXf T1_HEV;
+
+	static Eigen::MatrixXf Eta1_HEV; // efficiency of motor power
+	static Eigen::MatrixXf P1elec_HEV;
+	static Eigen::MatrixXf PbatD_HEV;
+	static Eigen::MatrixXf dSOC_HEV;
 
 	MG();
+	
+};
+
+class Tool
+{
+public :
+	static const int NumGrid; 
 	static vector<float> rpm2rs(vector<float> rpm);
-	static Eigen::VectorXf power(Eigen::VectorXf W1, Eigen::VectorXf T1, Eigen::VectorXf Eta1);
-	static Eigen::VectorXf Eta1_func(Eigen::VectorXf W1, Eigen::VectorXf T1);
+	static Eigen::MatrixXf FC_HEV();
+	static Eigen::MatrixXf Ti_HEV();
+	static Eigen::VectorXf Ti_max();
+
+	static Eigen::VectorXf W1_EV();
+	static Eigen::VectorXf T1_EV();
+	static Eigen::VectorXf Wi_HEV();
+	static Eigen::MatrixXf Wi_HEV_rep();
+	static Eigen::MatrixXf W1_HEV();
+	static Eigen::MatrixXf T1_HEV();
+	
+	static Eigen::VectorXf PbatD_EV();
+	static Eigen::MatrixXf PbatD_HEV();
+
+	static Eigen::VectorXf dSOC_EV();
+	static Eigen::MatrixXf dSOC_HEV();
+	static Eigen::VectorXf P1elec_EV();
+	static Eigen::MatrixXf P1elec_HEV();
+	static Eigen::VectorXf Eta1_EV();
+	static Eigen::MatrixXf Eta1_HEV();
+
 };
 
 

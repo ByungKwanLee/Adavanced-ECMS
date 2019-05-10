@@ -1,7 +1,6 @@
 #include <iostream>
-#include <optimizer.hpp>
+#include <VehicleInfo.hpp>
 #include <math.h>
-#include <data_loader.hpp>
 #include <ICEMG.hpp>
 #include <interp_tool.hpp>
 #include <typeinfo>  // typeid::name operator
@@ -20,7 +19,8 @@ using namespace LBK;
 
 int main(){
 
-	cout << MG::P1elec_EV(0) << endl;
+	cout << MG::PbatD_HEV.cols() << endl;
+	
 	float lambda = 0.1;
 	float tau = 1/pow(lambda,2);
 	float iter = 100.;

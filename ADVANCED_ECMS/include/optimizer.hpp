@@ -1,5 +1,4 @@
 #include <iostream>
-#include <VehicleInfo.hpp>
 #include <vector>
 
 using namespace std;
