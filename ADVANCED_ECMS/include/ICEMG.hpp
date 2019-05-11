@@ -86,14 +86,37 @@ public:
 class Tool
 {
 public :
+	// sampling point number in FC map
 	static const int NumGrid; 
-	static vector<float> rpm2rs(vector<float> rpm);
-	static Eigen::MatrixXf FC_HEV();
-	static Eigen::MatrixXf Ti_HEV();
-	static Eigen::VectorXf Ti_max();
-	static Eigen::VectorXf W1_EV();
-	static Eigen::VectorXf T1_EV();
 
+	// EV of W1, T1, Eta1 estimation
+	static Eigen::VectorXf W1_EV(bool update = true);
+	static Eigen::VectorXf T1_EV(bool update = true);
+	static Eigen::VectorXf Eta1_EV(bool update = true);
+
+	// EV of P estimation
+	static Eigen::VectorXf P1elec_EV(bool update = true);
+	static Eigen::VectorXf PbatD_EV(bool update = true);
+	static Eigen::VectorXf dSOC_EV(bool update = true);
+
+	// HEV of Wi, Ti
+	static Eigen::VectorXf Wi_HEV(bool update = true);
+	static Eigen::MatrixXf Wi_HEV_rep(bool update = true);
+	static Eigen::VectorXf Ti_max(bool update = true);
+	static Eigen::MatrixXf Ti_HEV(bool update = true);
+	static Eigen::MatrixXf FC_HEV(bool update = true);
+
+	// HEV of W1 T1 Eta1
+	static Eigen::MatrixXf W1_HEV(bool update = true);
+	static Eigen::MatrixXf T1_HEV(bool update = true);
+	static Eigen::MatrixXf Eta1_HEV(bool update = true);
+
+	// HEV of P estimation
+	static Eigen::MatrixXf P1elec_HEV(bool update = true);
+	static Eigen::MatrixXf PbatD_HEV(bool update = true);
+	static Eigen::MatrixXf dSOC_HEV(bool update = true);
+
+	// constraints
 	static float Wi_HEV_min(); //constraints
 	static float Wi_HEV_max(); //constraints
 	static Eigen::MatrixXf Ti_HEV_max(); // constraints
@@ -101,21 +124,8 @@ public :
 	static float W1_EV_max(); //constraints
 	static Eigen::VectorXf T1_EV_max(); //constraints
 
-	static Eigen::VectorXf Wi_HEV();
-	static Eigen::MatrixXf Wi_HEV_rep();
-	static Eigen::MatrixXf W1_HEV();
-	static Eigen::MatrixXf T1_HEV();
-
-	static Eigen::VectorXf PbatD_EV();
-	static Eigen::MatrixXf PbatD_HEV();
-
-	static Eigen::VectorXf dSOC_EV();
-	static Eigen::MatrixXf dSOC_HEV();
-	static Eigen::VectorXf P1elec_EV();
-	static Eigen::MatrixXf P1elec_HEV();
-	static Eigen::VectorXf Eta1_EV();
-	static Eigen::MatrixXf Eta1_HEV();
-
+	// fundamental tool
+	static vector<float> rpm2rs(vector<float> rpm);
 };
 
 
