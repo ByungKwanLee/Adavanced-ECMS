@@ -48,10 +48,4 @@ cout << "Tool::dSOC_EV() : " <<endl<<Tool::dSOC_EV()<< endl<< endl;
 // cout <<"Tool::PbatD_HEV() : " << endl<<Tool::PbatD_HEV() << endl<< endl;
 // cout << "Tool::dSOC_HEV() : " <<endl<<Tool::dSOC_HEV()<< endl<< endl;
 
-
-	
-	float lambda = 0.1;
-	float tau = 1/pow(lambda,2);
-	float iter = 100.;
-
 }
