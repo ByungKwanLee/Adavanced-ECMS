@@ -20,16 +20,20 @@ using namespace LBK;
 
 int main(){
 
+VehicleInfo::velocity = 35.3/3.6;
+VehicleInfo::accel = 1.2;
+
+cout<< "Voc,SOC "<<MG::Voc <<" , "<< MG::SOC <<endl;
 
 // EV of W1, T1, Eta1 estimation
-cout << "Tool::W1_EV() : " <<endl<<Tool::W1_EV() << endl<< endl;
-cout << "Tool::T1_EV() : " <<endl<<Tool::T1_EV() << endl<< endl;
-cout << "Tool::Eta1_EV() : " <<endl<<Tool::Eta1_EV() <<endl<< endl;
+cout << "Tool::W1_EV() : " <<endl<<Tool::W1_EV() << endl<< endl; // guranteed
+cout << "Tool::T1_EV() : " <<endl<<Tool::T1_EV() << endl<< endl; // guranteed
+cout << "Tool::Eta1_EV() : " <<endl<<Tool::Eta1_EV() <<endl<< endl; // guranteed
 
 // EV of P estimation
-cout << "Tool::P1elec_EV() : " <<endl<<Tool::P1elec_EV()<< endl<< endl;
-cout << "Tool::PbatD_EV() : " <<endl<<Tool::PbatD_EV()<< endl<< endl;
-cout << "Tool::dSOC_EV() : " <<endl<<Tool::dSOC_EV()<< endl<< endl;
+cout << "Tool::P1elec_EV() : " <<endl<<Tool::P1elec_EV()<< endl<< endl; //guranteed
+cout << "Tool::PbatD_EV() : " <<endl<<Tool::PbatD_EV()<< endl<< endl; //guranteed
+cout << "Tool::dSOC_EV() : " <<endl<<Tool::dSOC_EV()<< endl<< endl; //guranteed
 
 // HEV of Wi, Ti
 // cout <<"Tool::Wi_HEV() : " << endl<<Tool::Wi_HEV() << endl<< endl;

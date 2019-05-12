@@ -1,7 +1,6 @@
 #include <iostream>
 #include <eigen3/Eigen/Dense>
 #include <math.h>
-// 
 #include <vector>
 
 using namespace std;
@@ -86,8 +85,14 @@ public:
 class Tool
 {
 public :
+	// fundamental tool
+	static vector<float> rpm2rs(vector<float> rpm);
+
 	// sampling point number in FC map
-	static const int NumGrid; 
+	static const int NumGrid;
+
+	// ICEMG_update
+	static void ICEMG_parameter_update();
 
 	// EV of W1, T1, Eta1 estimation
 	static Eigen::VectorXf W1_EV(bool update = true);
@@ -123,9 +128,6 @@ public :
 	static Eigen::MatrixXf T1_HEV_max(); // constraints
 	static float W1_EV_max(); //constraints
 	static Eigen::VectorXf T1_EV_max(); //constraints
-
-	// fundamental tool
-	static vector<float> rpm2rs(vector<float> rpm);
 };
 
 

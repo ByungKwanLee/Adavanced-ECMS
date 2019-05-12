@@ -31,8 +31,8 @@ float interp_Tool::interpolate_1d(vector<float> & xData, vector<float> & yData,
 }
 
 
-float interp_Tool::interpolate_2d(vector<float> & xData, vector<float> & yData, 
-	vector<vector<float>> & zData, float x, float y)
+float interp_Tool::interpolate_2d(vector<float> & yData, vector<float> & xData, 
+	vector<vector<float>> & zData, float y, float x)
 {
 	int x_size = xData.size();
 	int y_size = yData.size();
@@ -53,16 +53,13 @@ float interp_Tool::interpolate_2d(vector<float> & xData, vector<float> & yData,
 	int sec_ind_y    =  std::min_element(yData_.begin(), yData_.end()) - yData_.begin();
 	float sec_data_y = *std::min_element(yData_.begin(), yData_.end());
 
-	float interpol_y =min_data_x*(min_data_y*zData[min_ind_x][min_ind_y] + sec_data_y*zData[min_ind_x][sec_ind_y])/(min_data_y+sec_data_y) 
-	+ sec_data_x*(min_data_y*zData[sec_ind_x][min_ind_y]  + sec_data_y*zData[sec_ind_x][sec_ind_y])/(min_data_y+sec_data_y);
-	interpol_y/=(min_data_x+sec_data_x);
-
-	float interpol_x = min_data_y*(min_data_x*zData[min_ind_x][min_ind_y]  + sec_data_x*zData[sec_ind_x][min_ind_y])/(min_data_x+sec_data_x)
-	+ sec_data_y*(min_data_x*zData[min_ind_x][sec_ind_y]  + sec_data_x*zData[sec_ind_x][sec_ind_y])/(min_data_x+sec_data_x);
-	interpol_x/=(min_data_y+sec_data_y);
-
-
-
-	return (interpol_x + interpol_y) /2;
-
+	Eigen::VectorXf a(2);
+	a << xData[sec_ind_x]-x, x-xData[min_ind_x] ;
+	Eigen::VectorXf b(2);
+	b<< yData[sec_ind_y]-y, y-yData[min_ind_y];
+	Eigen::MatrixXf Q(2,2);
+	Q << zData[min_ind_x][min_ind_y], zData[min_ind_x][sec_ind_y],zData[sec_ind_x][min_ind_y], zData[sec_ind_x][sec_ind_y];
+	Eigen::VectorXf result = a.transpose()*Q*b / ((xData[sec_ind_x]-xData[min_ind_x])*(yData[sec_ind_y]-yData[min_ind_y]));
+	vector<float> res(result.data(), result.data()+result.size());
+	return res[0];
 }
