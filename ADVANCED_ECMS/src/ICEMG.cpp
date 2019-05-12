@@ -14,11 +14,11 @@ float ICE::TM_Eff = 0.9;
 float ICE::FD_EFF = 0.97;
 float ICE::FD_Ratio = 4.11;
 
-vector<float> ICE::En_minRPM = get_1d_data("src/ADVANCED_ECMS/data/En_minRPM");
+vector<float> ICE::En_minRPM = Tool::rpm2rs(get_1d_data("src/ADVANCED_ECMS/data/En_minRPM"));
 vector<float> ICE::En_minTrq = get_1d_data("src/ADVANCED_ECMS/data/En_minTrq");
-vector<float> ICE::En_maxRPM = get_1d_data("src/ADVANCED_ECMS/data/En_maxRPM");
+vector<float> ICE::En_maxRPM = Tool::rpm2rs(get_1d_data("src/ADVANCED_ECMS/data/En_maxRPM"));
 vector<float> ICE::En_maxTrq = get_1d_data("src/ADVANCED_ECMS/data/En_maxTrq");
-vector<float> ICE::En_mapRPM = get_1d_data("src/ADVANCED_ECMS/data/En_mapRPM"); //to be added
+vector<float> ICE::En_mapRPM = Tool::rpm2rs(get_1d_data("src/ADVANCED_ECMS/data/En_mapRPM")); //to be added
 vector<float> ICE::En_mapTrq = get_1d_data("src/ADVANCED_ECMS/data/En_mapTrq");
 vector<vector<float>> ICE::En_mapData = get_2d_data("src/ADVANCED_ECMS/data/En_mapData");
 vector<vector<float>> ICE::En_FC = get_2d_data("src/ADVANCED_ECMS/data/En_FC");

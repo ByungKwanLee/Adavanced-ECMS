@@ -23,7 +23,7 @@ int main(){
 VehicleInfo::velocity = 35.3/3.6;
 VehicleInfo::accel = 1.2;
 
-cout<< "Voc,SOC "<<MG::Voc <<" , "<< MG::SOC <<endl;
+cout<< VehicleInfo::P_d() <<endl;
 
 // EV of W1, T1, Eta1 estimation
 cout << "Tool::W1_EV() : " <<endl<<Tool::W1_EV() << endl<< endl; // guranteed
@@ -36,9 +36,9 @@ cout << "Tool::PbatD_EV() : " <<endl<<Tool::PbatD_EV()<< endl<< endl; //gurantee
 cout << "Tool::dSOC_EV() : " <<endl<<Tool::dSOC_EV()<< endl<< endl; //guranteed
 
 // HEV of Wi, Ti
-// cout <<"Tool::Wi_HEV() : " << endl<<Tool::Wi_HEV() << endl<< endl;
+cout <<"Tool::Wi_HEV() : " << endl<<Tool::Wi_HEV() << endl<< endl; //guranteed
 // cout << "Tool::Wi_HEV_rep() : " <<endl<<Tool::Wi_HEV_rep() << endl<< endl;
-// cout << "Tool::Ti_max() : " <<endl<<Tool::Ti_max() << endl<< endl;
+cout << "Tool::Ti_max() : " <<endl<<Tool::Ti_max() << endl<< endl; //guranteed
 // cout <<"Tool::Ti_HEV() : " << endl<<Tool::Ti_HEV() << endl<< endl;
 // cout <<"Tool::FC_HEV() : " << endl<<Tool::FC_HEV() << endl<< endl;
 
