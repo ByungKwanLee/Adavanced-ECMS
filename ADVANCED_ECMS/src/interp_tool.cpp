@@ -61,5 +61,6 @@ float interp_Tool::interpolate_2d(vector<float> & yData, vector<float> & xData,
 	Q << zData[min_ind_x][min_ind_y], zData[min_ind_x][sec_ind_y],zData[sec_ind_x][min_ind_y], zData[sec_ind_x][sec_ind_y];
 	Eigen::VectorXf result = a.transpose()*Q*b / ((xData[sec_ind_x]-xData[min_ind_x])*(yData[sec_ind_y]-yData[min_ind_y]));
 	vector<float> res(result.data(), result.data()+result.size());
+	
 	return res[0];
 }
