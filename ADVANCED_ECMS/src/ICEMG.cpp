@@ -24,7 +24,7 @@ vector<vector<float>> ICE::En_mapData = get_2d_data("src/ADVANCED_ECMS/data/En_m
 vector<vector<float>> ICE::En_FC = get_2d_data("src/ADVANCED_ECMS/data/En_FC");
 
 //  battery configuration
-float MG::SOC=0.6;
+float MG::SOC = 0.6;
 float MG::P_bat = 32000;
 float MG::Bat_NumCell = 168;
 float MG::Bat_Quantity = 6.5;

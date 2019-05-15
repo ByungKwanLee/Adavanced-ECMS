@@ -129,9 +129,10 @@ public :
 	// constraints
 	static float Wi_HEV_min(); //constraints
 	static float Wi_HEV_max(); //constraints
+	static float W1_HEV_max(); //constraints
+	static float W1_EV_max(); //constraints
 	static Eigen::MatrixXf Ti_HEV_max(); // constraints
 	static Eigen::MatrixXf T1_HEV_max(); // constraints
-	static float W1_EV_max(); //constraints
 	static Eigen::VectorXf T1_EV_max(); //constraints
 };
 

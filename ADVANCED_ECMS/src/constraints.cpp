@@ -5,9 +5,9 @@ using namespace std;
 using namespace LBK;
 
 // constraints start. //
-
 float Tool::Wi_HEV_min() {return *std::min_element(ICE::En_mapRPM.begin(), ICE::En_mapRPM.end());}
 float Tool::Wi_HEV_max() {return *std::max_element(ICE::En_mapRPM.begin(), ICE::En_mapRPM.end());}
+float Tool::W1_HEV_max()  {return *std::max_element(MG::MG_maxRPM.begin(), MG::MG_maxRPM.end());}
 float Tool::W1_EV_max()  {return *std::max_element(MG::MG_maxRPM.begin(), MG::MG_maxRPM.end());}
 
 Eigen::VectorXf Tool::T1_EV_max()
