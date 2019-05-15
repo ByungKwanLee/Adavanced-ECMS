@@ -42,8 +42,8 @@ vector<float> MG::MG_maxRPM = Tool::rpm2rs( get_1d_data("src/ADVANCED_ECMS/data/
 vector<vector<float>> MG::MG_mapData = get_2d_data("src/ADVANCED_ECMS/data/MG_mapData");
 
 // Voc Rint estimation
-float MG::Voc  = MG::Bat_NumCell * interp_Tool::interpolate_1d(MG::Bat_indexSoc, MG::Bat_indexVoc, MG::SOC, false);
-float MG::Rint = MG::Bat_NumCell * interp_Tool::interpolate_1d(MG::Bat_indexSoc, MG::Bat_indexRint,  MG::SOC, false);
+float MG::Voc  = Tool::Voc(false);
+float MG::Rint = Tool::Rint(false);
 
 // EV of W1, T1, Eta1 estimation
 Eigen::VectorXf MG::W1_EV = Tool::W1_EV(false);

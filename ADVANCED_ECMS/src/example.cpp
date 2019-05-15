@@ -20,12 +20,17 @@ using namespace LBK;
 
 int main(){
 
+MG::SOC = 0.5;
 VehicleInfo::velocity =  60.4/3.6;
 VehicleInfo::accel = -2.3;
 Tool::ICEMG_parameter_update();
 
 // P_d
 // cout<< "Tool::P_d() : "<< VehicleInfo::P_d() <<endl<<endl;
+
+// Voc, Rint
+// cout << "Tool::Voc() : " << Tool::Voc() <<endl<<endl; // guranteed
+// cout << "Tool::Rint() : " << Tool::Rint() <<endl<<endl; // guranteed
 
 // EV of W1, T1, Eta1 estimation
 // cout << "Tool::W1_EV() : " <<endl<<Tool::W1_EV(false) << endl<< endl; // guranteed

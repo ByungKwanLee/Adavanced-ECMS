@@ -94,6 +94,11 @@ public :
 	// ICEMG_update
 	static void ICEMG_parameter_update();
 
+
+	// Voc, Rint
+	static float Voc(bool update = true);
+	static float Rint(bool update = true );
+
 	// EV of W1, T1, Eta1 estimation
 	static Eigen::VectorXf W1_EV(bool update = true);
 	static Eigen::VectorXf T1_EV(bool update = true);

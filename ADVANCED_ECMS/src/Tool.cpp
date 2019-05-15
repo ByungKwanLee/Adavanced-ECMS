@@ -11,7 +11,10 @@ const int Tool::NumGrid = 100;
 // ICEMG_update
 void Tool::ICEMG_parameter_update()
 {
+	// Voc, Rint
+	Tool::Voc(); Tool::Rint();
 
+	// EV of W, T, Eta1
 	Tool::W1_EV(); Tool::T1_EV(); Tool::Eta1_EV();
 
 	// EV of P estimation
@@ -35,6 +38,19 @@ vector<float> Tool::rpm2rs(vector<float> rpm)
 	return rpm;
 }
 
+float Tool::Voc(bool update)
+{
+	float v = MG::Bat_NumCell * interp_Tool::interpolate_1d(MG::Bat_indexSoc, MG::Bat_indexVoc, MG::SOC, false);
+	if (update) MG::Voc=v;
+	return v;
+}
+
+float Tool::Rint(bool update)
+{
+	float v = MG::Bat_NumCell * interp_Tool::interpolate_1d(MG::Bat_indexSoc, MG::Bat_indexRint,  MG::SOC, false);
+	if (update) MG::Rint=v;
+	return v;
+}
 
 // EV of W1, T1, Eta1 estimation
 Eigen::VectorXf Tool::W1_EV(bool update) 
