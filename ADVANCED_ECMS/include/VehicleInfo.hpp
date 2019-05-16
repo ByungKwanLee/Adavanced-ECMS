@@ -20,6 +20,10 @@ public:
 	static float Frl();
 	static float P_d();
 	
+	// real time variable
+	static float velocity_rt;
+	static float velocity_pre_rt;
+	static float accel_rt;
 };
 
 

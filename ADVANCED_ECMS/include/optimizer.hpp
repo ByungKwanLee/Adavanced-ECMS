@@ -19,6 +19,7 @@ private:
 
 public:
 	Optimizer(float lambda, float tau, float iter);
+	static void ADMM_Optimizer();
 	
 };
 
