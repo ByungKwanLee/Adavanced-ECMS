@@ -19,6 +19,7 @@ public:
 	// calculation function
 	static float Frl();
 	static float P_d();
+	static void velocity_update(float accel, float time = 0.01);
 	
 	// real time variable
 	static float velocity_rt;

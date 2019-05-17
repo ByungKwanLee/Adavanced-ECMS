@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <eigen3/Eigen/Dense>
 
 using namespace std;
 
@@ -12,13 +13,14 @@ class Optimizer
 {
 
 private:
-	float lambda;
-	float tau;
-	float iter;
-	float Costmodeling();
+	float mu;
+	float raw;
+	float max_iter;
+	
 
 public:
-	Optimizer(float lambda, float tau, float iter);
+	Optimizer(float mu, float raw, float max_iter);
+	Eigen::MatrixXf ADMM_Costmodeling();
 	static void ADMM_Optimizer();
 	
 };

@@ -1,11 +1,17 @@
+// C++ library 
 #include <iostream>
-#include <VehicleInfo.hpp>
 #include <math.h>
+#include <typeinfo>  // typeid::name operator
+
+// Advanced ECMS library
+#include <VehicleInfo.hpp>
 #include <ICEMG.hpp>
 #include <interp_tool.hpp>
-#include <typeinfo>  // typeid::name operator
-#include <std_msgs/Float32.h>
+#include <optimizer.hpp>
+
+// ROS library
 #include <ros/ros.h>
+#include <std_msgs/Float32.h>
 
 // getcwd
 // #include <unistd.h>
@@ -19,32 +25,62 @@
 using namespace std;
 using namespace LBK;
 
+// check sum for callback 
+int i = 0;
 
 void accel_callback(const std_msgs::Float32::ConstPtr & accel_data)
 {	
-
-	VehicleInfo::accel_rt = accel_data->data;
-	VehicleInfo::velocity_rt = VehicleInfo::velocity_pre_rt + VehicleInfo::accel_rt * 0.01;
-	VehicleInfo::velocity_pre_rt = VehicleInfo::velocity_rt;
+	VehicleInfo::velocity_update(accel_data->data);
 	cout << "velocity and accel : "<< VehicleInfo::velocity_rt <<", "<< VehicleInfo::accel_rt << endl;
+	i += 1;
 } 
+
+void accel_nocallback()
+{	
+	VehicleInfo::velocity_update(-0.1);
+	cout << "velocity and accel : "<< VehicleInfo::velocity_rt <<", "<< VehicleInfo::accel_rt << endl;
+}
 
 
 int main(int argc, char ** argv){
 
+// ros setting for making node
 ros::init(argc, argv, "Advanced_ecms_node");
 ros::NodeHandle nh;
 ros::Subscriber sub = nh.subscribe("/accel", 1, accel_callback);
 
-ros::Time start = ros::Time::now();
-MG::SOC = 0.5;
-VehicleInfo::velocity =  60.4/3.6;
-VehicleInfo::accel = -2.3;
-Tool::ICEMG_parameter_update();
-ros::Time end = ros::Time::now();
 
-ros::spin();
-// Processing time
+ros::Rate rate(100); // HZ
+while(ros::ok())
+{	
+	int i_copy = i;
+
+	// ros spin
+	ros::spinOnce();
+
+	// if no callback, then deceleration for friction
+	if (i == i_copy) accel_nocallback();
+
+	// limitation of int byte
+	if (i > 10000) i = 0;
+
+	// sleep thread
+	rate.sleep();
+}
+
+
+// ros::Time start = ros::Time::now();
+
+// MG::SOC = 0.5;
+// VehicleInfo::velocity =  60.4/3.6;
+// VehicleInfo::accel = -2.3;
+// Tool::ICEMG_parameter_update();
+
+// Optimizer obj_optimizer(1,2,3);
+
+// ros::Time end = ros::Time::now();
+
+// // Processing time
 // cout << "Processing time : "<<(end - start).toSec() <<endl<<endl;
 
 // P_d

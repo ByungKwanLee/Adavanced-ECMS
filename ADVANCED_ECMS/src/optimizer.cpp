@@ -2,21 +2,27 @@
 #include <math.h>
 #include <optimizer.hpp>
 #include <ICEMG.hpp>
-#include <eigen3/Eigen/Dense>
+
 
 using namespace std;
 using namespace LBK;
 
 
-Optimizer::Optimizer(float lambda, float tau, float iter)
+Optimizer::Optimizer(float mu, float raw, float max_iter)
 {
-	Optimizer::lambda = lambda;
-	Optimizer::tau = tau;
-	Optimizer::iter = iter;
+	Optimizer::mu = mu;
+	Optimizer::raw = raw;
+	Optimizer::max_iter = max_iter;
+}
+
+Eigen::MatrixXf Optimizer::ADMM_Costmodeling()
+{
+	Eigen::MatrixXf H = MG::dSOC_HEV + Optimizer::mu * Eigen::MatrixXf::Ones(MG::dSOC_HEV.rows(), MG::dSOC_HEV.cols());
+	return ICE::FC_HEV + Optimizer::raw * H.cwiseProduct(H);
 }
 
 void Optimizer::ADMM_Optimizer()
 {
-	// ICE::En_FC(RPM, Torque) +  
+	
 }
 
