@@ -82,7 +82,12 @@ Optimizer obj_optimizer(1,1,1,1);
 // cout << obj_optimizer.Lagrangian_Costmodeling("EV") << endl;
 // cout << obj_optimizer.Lagrangian_Costmodeling("HEV") << endl;
 // cout << obj_optimizer.ADMM_Costmodeling("EV") << endl;
-// cout << obj_optimizer.ADMM_Costmodeling("HEV").size() << endl;
+// cout << obj_optimizer.ADMM_Costmodeling("HEV") << endl;
+
+// float * minimum_EV_L = obj_optimizer.minimum_EV("L");
+// float * minimum_EV_ADMM = obj_optimizer.minimum_EV("ADMM");
+// float ** minimum_HEV_L = obj_optimizer.minimum_HEV("L");
+// float ** minimum_HEV_ADMM = obj_optimizer.minimum_HEV("ADMM");
 
 ros::Time end = ros::Time::now();
 
