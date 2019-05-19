@@ -28,7 +28,6 @@ public:
 	static vector<vector<float>> En_mapData;
 	static vector<vector<float>> En_FC;
 
-
 	// HEV
 	static Eigen::VectorXf Wi_HEV;
 	static Eigen::MatrixXf Wi_HEV_rep; // special
@@ -37,6 +36,10 @@ public:
 
 	// FC
 	static Eigen::MatrixXf FC_HEV;
+
+	// constraints
+	static float Wi_HEV_min; //constraints
+	static float Wi_HEV_max; //constraints
 
 };
 
@@ -65,9 +68,9 @@ public:
 	static vector<float> MG_maxRPM;
 
 	// EV 
-	static Eigen::VectorXf W1_EV;
+	static Eigen::VectorXf W1_EV;	static Eigen::VectorXf W1_EV_constr;
 	static Eigen::VectorXf T1_EV;
-	static Eigen::VectorXf Eta1_EV; // efficiency of motor power
+	static Eigen::VectorXf Eta1_EV;
 	static Eigen::VectorXf P1elec_EV;
 	static Eigen::VectorXf PbatD_EV;
 	static Eigen::VectorXf dSOC_EV;
@@ -80,6 +83,12 @@ public:
 	static Eigen::MatrixXf P1elec_HEV;
 	static Eigen::MatrixXf PbatD_HEV;
 	static Eigen::MatrixXf dSOC_HEV;
+
+	// contraints
+	static float W1_HEV_max; //constraints
+	static float W1_EV_max; //constraints
+	static Eigen::VectorXf T1_EV_max; //constraints
+
 };
 
 class Tool
@@ -126,14 +135,15 @@ public :
 	static Eigen::MatrixXf PbatD_HEV(bool update = true);
 	static Eigen::MatrixXf dSOC_HEV(bool update = true);
 
-	// constraints
+	// constraints fucntion
+	static float W1_EV_max(); //constraints
+	static Eigen::VectorXf W1_EV_constr(bool update = true);
+	static Eigen::VectorXf T1_EV_max(bool update = true); //constraints
+	static float W1_HEV_max(); //constraints
 	static float Wi_HEV_min(); //constraints
 	static float Wi_HEV_max(); //constraints
-	static float W1_HEV_max(); //constraints
-	static float W1_EV_max(); //constraints
-	static Eigen::MatrixXf Ti_HEV_max(); // constraints
-	static Eigen::MatrixXf T1_HEV_max(); // constraints
-	static Eigen::VectorXf T1_EV_max(); //constraints
+	
+	
 };
 
 

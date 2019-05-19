@@ -50,38 +50,46 @@ ros::NodeHandle nh;
 ros::Subscriber sub = nh.subscribe("/accel", 1, accel_callback);
 
 
-ros::Rate rate(100); // HZ
-while(ros::ok())
-{	
-	int i_copy = i;
+// real time processing part
+// ros::Rate rate(100); // HZ
+// while(ros::ok())
+// {	
+// 	int i_copy = i;
 
-	// ros spin
-	ros::spinOnce();
+// 	// ros spin
+// 	ros::spinOnce();
 
-	// if no callback, then deceleration for friction
-	if (i == i_copy) accel_nocallback();
+// 	// if no callback, then deceleration for friction
+// 	if (i == i_copy) accel_nocallback();
 
-	// limitation of int byte
-	if (i > 10000) i = 0;
+// 	// limitation of int byte
+// 	if (i > 10000) i = 0;
 
-	// sleep thread
-	rate.sleep();
-}
+// 	// sleep thread
+// 	rate.sleep();
+// }
 
 
-// ros::Time start = ros::Time::now();
+ros::Time start = ros::Time::now();
 
-// MG::SOC = 0.5;
-// VehicleInfo::velocity =  60.4/3.6;
-// VehicleInfo::accel = -2.3;
-// Tool::ICEMG_parameter_update();
+MG::SOC = 0.6;
+VehicleInfo::velocity =  60.4/3.6;
+VehicleInfo::accel = -0.132;
+Tool::ICEMG_parameter_update();
 
-// Optimizer obj_optimizer(1,2,3);
+Optimizer obj_optimizer(1,1,1,1);
 
-// ros::Time end = ros::Time::now();
+// cout << obj_optimizer.Lagrangian_Costmodeling("EV") << endl;
+// cout << obj_optimizer.Lagrangian_Costmodeling("HEV") << endl;
+// cout << obj_optimizer.ADMM_Costmodeling("EV") << endl;
+// cout << obj_optimizer.ADMM_Costmodeling("HEV").size() << endl;
 
-// // Processing time
-// cout << "Processing time : "<<(end - start).toSec() <<endl<<endl;
+ros::Time end = ros::Time::now();
+
+// Processing time
+cout << "Processing time : "<<(end - start).toSec() <<endl<<endl;
+
+
 
 // P_d
 // cout<< "Tool::P_d() : "<< VehicleInfo::P_d() <<endl<<endl;

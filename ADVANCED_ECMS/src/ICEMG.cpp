@@ -48,6 +48,11 @@ float MG::Rint = Tool::Rint(false);
 
 // EV of W1, T1, Eta1 estimation
 Eigen::VectorXf MG::W1_EV = Tool::W1_EV(false);
+Eigen::VectorXf MG::W1_EV_constr = Tool::W1_EV_constr(false);
+
+float MG::W1_EV_max = Tool::W1_EV_max(); //constraints
+Eigen::VectorXf MG::T1_EV_max = Tool::T1_EV_max(); //constraints
+
 Eigen::VectorXf MG::T1_EV = Tool::T1_EV(false);
 Eigen::VectorXf MG::Eta1_EV = Tool::Eta1_EV(false);
 
@@ -72,3 +77,12 @@ Eigen::MatrixXf MG::Eta1_HEV = Tool::Eta1_HEV(false);
 Eigen::MatrixXf MG::P1elec_HEV = Tool::P1elec_HEV(false);
 Eigen::MatrixXf MG::PbatD_HEV = Tool::PbatD_HEV(false);
 Eigen::MatrixXf MG::dSOC_HEV = Tool::dSOC_HEV(false);
+
+
+// constraints of MG
+float MG::W1_HEV_max = Tool::W1_HEV_max(); //constraints
+
+// constraints of ICE
+float ICE::Wi_HEV_min = Tool::Wi_HEV_min(); //constraints
+float ICE::Wi_HEV_max = Tool::Wi_HEV_max(); //constraints
+

@@ -16,6 +16,7 @@ float VehicleInfo::wheel_radius=0.27; //[m]
 float VehicleInfo::velocity_pre_rt = 0;
 float VehicleInfo::velocity_rt = 0;
 float VehicleInfo::accel_rt = 0;
+float VehicleInfo::time_rt = 0.01;
 
 float VehicleInfo::Frl()
 {
