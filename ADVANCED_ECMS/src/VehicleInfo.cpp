@@ -16,7 +16,7 @@ float VehicleInfo::wheel_radius=0.27; //[m]
 float VehicleInfo::velocity_pre_rt = 0;
 float VehicleInfo::velocity_rt = 0;
 float VehicleInfo::accel_rt = 0;
-float VehicleInfo::time_rt = 0.01;
+float VehicleInfo::time_rt = 0.02;
 
 float VehicleInfo::Frl()
 {
@@ -46,6 +46,12 @@ void VehicleInfo::velocity_update(float accel, float time)
 		VehicleInfo::velocity_rt = VehicleInfo::velocity_pre_rt + accel * time;
 		VehicleInfo::velocity_pre_rt = VehicleInfo::velocity_rt;
 
-		if(VehicleInfo::velocity_rt < 0) VehicleInfo::velocity_pre_rt = VehicleInfo::velocity_rt = 0;
+		if(VehicleInfo::velocity_rt < 0) VehicleInfo::velocity_pre_rt = VehicleInfo::velocity_rt = VehicleInfo::accel_rt = 0;
 	}
+}
+
+void VehicleInfo::for_optimizer()
+{
+		VehicleInfo::accel = VehicleInfo::accel_rt;
+		VehicleInfo::velocity = VehicleInfo::velocity_rt;
 }

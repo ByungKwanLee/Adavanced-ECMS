@@ -60,7 +60,7 @@ float Tool::Rint(bool update)
 // EV of W1, T1, Eta1 estimation
 Eigen::VectorXf Tool::W1_EV(bool update) 
 {
-	Eigen::VectorXf v, v_;
+	Eigen::VectorXf v;
 	v = VehicleInfo::velocity/VehicleInfo::wheel_radius*ICE::FD_Ratio*ICE::TMR;
 	if(update) MG::W1_EV = v;
 	return v;		

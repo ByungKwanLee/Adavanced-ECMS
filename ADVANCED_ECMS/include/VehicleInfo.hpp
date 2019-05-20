@@ -20,7 +20,8 @@ public:
 	static float Frl();
 	static float P_d();
 	static void velocity_update(float accel, float time = VehicleInfo::time_rt);
-	
+	static void for_optimizer();
+
 	// real time variable
 	static float velocity_rt;
 	static float velocity_pre_rt;

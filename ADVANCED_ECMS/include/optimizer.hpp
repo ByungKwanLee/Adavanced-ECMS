@@ -21,16 +21,17 @@ private:
 	float mu;
 	float raw;
 	float max_iter;
-	
 
 public:
+	std::tuple<string, int, int, float> optimal_inform;
+	
 	Optimizer(float lambda, float mu, float raw, float max_iter);
 	Eigen::MatrixXf Lagrangian_Costmodeling(string mode);
 	Eigen::MatrixXf ADMM_Costmodeling(string mode);
-	std::pair<int, float> minimum_EV(string method);
-	std::map<int, float> minimum_HEV(string method);
+	vector<float> minimum_EV(string method);
+	vector<vector<float>> minimum_HEV(string method);
 	std::tuple<string, int, int, float> optimal_method(string method);
-
+	void SOC_update();
 	
 };
 

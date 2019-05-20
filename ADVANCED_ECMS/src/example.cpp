@@ -31,14 +31,15 @@ int i = 0;
 void accel_callback(const std_msgs::Float32::ConstPtr & accel_data)
 {	
 	VehicleInfo::velocity_update(accel_data->data);
-	cout << "velocity and accel : "<< VehicleInfo::velocity_rt <<", "<< VehicleInfo::accel_rt << endl;
+	// cout << "velocity and accel : "<< VehicleInfo::velocity_rt <<", "<< VehicleInfo::accel_rt << endl;
 	i += 1;
 } 
 
 void accel_nocallback()
 {	
-	VehicleInfo::velocity_update(-0.1);
-	cout << "velocity and accel : "<< VehicleInfo::velocity_rt <<", "<< VehicleInfo::accel_rt << endl;
+	// friction for ground and wind
+	VehicleInfo::velocity_update(-0.3);
+	// cout << "velocity and accel : "<< VehicleInfo::velocity_rt <<", "<< VehicleInfo::accel_rt << endl;
 }
 
 
@@ -48,39 +49,20 @@ int main(int argc, char ** argv){
 ros::init(argc, argv, "Advanced_ecms_node");
 ros::NodeHandle nh;
 ros::Subscriber sub = nh.subscribe("/accel", 1, accel_callback);
-
-
-// real time processing part
-// ros::Rate rate(100); // HZ
-// while(ros::ok())
-// {	
-// 	int i_copy = i;
-
-// 	// ros spin
-// 	ros::spinOnce();
-
-// 	// if no callback, then deceleration for friction
-// 	if (i == i_copy) accel_nocallback();
-
-// 	// limitation of int byte
-// 	if (i > 10000) i = 0;
-
-// 	// sleep thread
-// 	rate.sleep();
-// }
-
-
-ros::Time start = ros::Time::now();
+ros::Publisher pub_vel = nh.advertise<std_msgs::Float32>("/velocity", 1);
+ros::Publisher pub_soc = nh.advertise<std_msgs::Float32>("/soc", 1);
 
 MG::SOC = 0.6;
-VehicleInfo::velocity =  60.4/3.6;
-VehicleInfo::accel = -0.132;
+VehicleInfo::velocity =  11.76*3.6/3.6;
+VehicleInfo::accel = 4;
 Tool::ICEMG_parameter_update();
 
-Optimizer obj_optimizer(-491,1,1,1);
+// Optimizer obj_optimizer(-491,1,1,1);
+
+// obj_optimizer.optimal_method("L");
 
 // cout << obj_optimizer.Lagrangian_Costmodeling("EV") << endl;
-// cout << obj_optimizer.Lagrangian_Costmodeling("HEV") << endl;
+// cout << obj_optimizer.Lagrangian_Costmodeling("HEV")<< endl;
 // cout << obj_optimizer.ADMM_Costmodeling("EV") << endl;
 // cout << obj_optimizer.ADMM_Costmodeling("HEV") << endl;
 
@@ -92,13 +74,69 @@ Optimizer obj_optimizer(-491,1,1,1);
 // float * minimum_EV_ADMM = obj_optimizer.minimum_EV("ADMM");
 // float ** minimum_HEV_ADMM = obj_optimizer.minimum_HEV("ADMM");
 
-// optimal method
-// cout <<std::get<3>(obj_optimizer.optimal_method("L")) <<endl;
-
-ros::Time end = ros::Time::now();
 
 // Processing time
-cout << "Processing time : "<<(end - start).toSec() <<endl<<endl;
+// cout << "Optimal Mode : " <<std::get<0>(obj_optimizer.optimal_method("L"))
+// << ", Optimal gear : " << std::get<1>(obj_optimizer.optimal_method("L"))
+// << ", grid number : " <<std::get<2>(obj_optimizer.optimal_method("L"))
+// <<", cost : " <<std::get<3>(obj_optimizer.optimal_method("L"))
+// <<endl<<endl;
+
+
+// real time processing part
+// ros::Rate rate(50); // HZ
+// while(ros::ok())
+// {	
+// 	ros::Time start = ros::Time::now();
+// 	int i_copy = i;
+
+// 	// ros spin for subscribing rt var : accel
+// 	ros::spinOnce();
+
+// 	// if no callback, then deceleration for friction
+// 	if (i == i_copy) accel_nocallback();
+
+// 	// update from rt var -> optimizer var
+// 	VehicleInfo::for_optimizer();
+
+// 	// publish velocity
+// 	std_msgs::Float32 msg_vel; 
+// 	msg_vel.data = VehicleInfo::velocity_rt;
+// 	pub_vel.publish(msg_vel);
+
+// 	Tool::ICEMG_parameter_update();
+// 	// limitation of int byte
+// 	if (i > 10000) i = 0;
+
+// 	ros::Time end = ros::Time::now();
+
+// 	obj_optimizer.optimal_method("L");
+
+// 	// Processing time
+// 	cout << "Optimal Mode : " <<std::get<0>(obj_optimizer.optimal_inform)
+// 	<< ", Optimal gear : " << std::get<1>(obj_optimizer.optimal_inform)
+// 	<< ", grid number : " <<std::get<2>(obj_optimizer.optimal_inform)
+// 	<<", cost : " <<std::get<3>(obj_optimizer.optimal_inform)
+// 	<<", SOC : "<<MG::SOC
+// 	<<", velocity : " <<VehicleInfo::velocity
+// 	<<", accel : " << VehicleInfo::accel
+// 	<<endl<<endl;
+
+// 	// publish SOC
+// 	std_msgs::Float32 msg_SOC; 
+// 	msg_SOC.data = MG::SOC;
+// 	pub_soc.publish(msg_SOC);
+
+// 	// obj_optimizer.SOC_update();
+
+// 	// sleep thread
+// 	rate.sleep();
+// }
+
+
+
+
+
 
 
 
