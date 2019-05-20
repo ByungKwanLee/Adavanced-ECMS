@@ -2,7 +2,7 @@
 #include <math.h>
 #include <optimizer.hpp>
 #include <ICEMG.hpp>
-
+#include <malloc.h>
 
 using namespace std;
 using namespace LBK;
@@ -24,6 +24,14 @@ struct NaN_include
   }
 };
 
+struct min_by_value
+{
+	bool operator() (std::pair<int, float> a, std::pair<int, float> b) 
+	{
+		return a.second < b.second;
+	}
+};
+
 
 Optimizer::Optimizer(float lambda, float mu, float raw, float max_iter)
 {
@@ -32,6 +40,7 @@ Optimizer::Optimizer(float lambda, float mu, float raw, float max_iter)
 	Optimizer::raw = raw;
 	Optimizer::max_iter = max_iter;
 }
+
 
 Eigen::MatrixXf Optimizer::Lagrangian_Costmodeling(string mode)
 {
@@ -66,7 +75,7 @@ Eigen::MatrixXf Optimizer::ADMM_Costmodeling(string mode)
 }
 
 
-float * Optimizer::minimum_EV(string method)
+std::pair<int, float> Optimizer::minimum_EV(string method)
 {
 	assert( (method == "L" || method == "ADMM" ) && "Choose in [""L"", ""ADMM""]" );
 
@@ -83,14 +92,11 @@ float * Optimizer::minimum_EV(string method)
 	vector<float> v_(v.data(), v.data()+v.size());
 	vector<float>::iterator v_iterator = std::min_element(v_.begin(), v_.end(), NaN_include<float>());
 
-	// Dynamic Allocation
-	float * output = new float[2];
-	output[0] = *v_iterator;
-	output[1] = int(v_iterator - v_.begin());
+	std::pair<int, float> output(int(v_iterator - v_.begin()), *v_iterator);
 	return output;
 }
 
-float ** Optimizer::minimum_HEV(string method)
+std::map<int, float> Optimizer::minimum_HEV(string method)
 {
 	assert( (method == "L" || method == "ADMM" ) && "Choose in [""L"", ""ADMM""]" );
 
@@ -104,23 +110,56 @@ float ** Optimizer::minimum_HEV(string method)
 	{
 		v = Optimizer::ADMM_Costmodeling("HEV");
 	}
-	
-	// Dynamic Allocation
-	float ** output = new float * [v.rows()];
-	for(int ind=0; ind < v.rows(); ind++)
-	{
-		output[ind] = new float[2];	
-	}
 
+	std::map<int, float> output;
 	for(int ind=0; ind < v.rows(); ind++)
 	{
 		Eigen::VectorXf row_vec = v.row(ind);
 		vector<float> row_std(row_vec.data(), row_vec.data() + row_vec.size());
 		vector<float>::iterator v_min_row = std::min_element(row_std.begin(), row_std.end(), NaN_include<float>());
 		int v_min_ind =  v_min_row - row_std.begin();
-		output[ind][0] = *v_min_row;
-		output[ind][1] = v_min_ind;
+
+		output.insert(std::make_pair(v_min_ind, *v_min_row));
 	}
 
 	return output;
 }
+
+std::pair<string, int> Optimizer::optimal_method(string method)
+{
+	assert( (method == "L" || method == "ADMM" ) && "Choose in [""L"", ""ADMM""]" );
+
+	std::pair<int, float> minimum_EV;
+	std::map<int, float> minimum_All;
+
+	if(method == "L")
+	{
+		// L method
+		minimum_EV  = Optimizer::minimum_EV("L");
+		minimum_All = Optimizer::minimum_HEV("L");	
+	}
+	else
+	{
+		// ADMM method
+		minimum_EV  = Optimizer::minimum_EV("ADMM");
+		minimum_All = Optimizer::minimum_HEV("ADMM");	
+	}
+
+	minimum_All.insert(minimum_EV);
+	
+	std::pair<int, float> min_dict
+	= *std::min_element(minimum_All.begin(), minimum_All.end(), min_by_value());
+
+	if (min_dict.first == minimum_EV.first  && min_dict.second == minimum_EV.second)
+	{
+		std::pair<string, int> minimum_pair("EV", min_dict.first);
+		return minimum_pair;
+	}
+	else
+	{
+		std::pair<string, int> minimum_pair("HEV", min_dict.first);
+		return minimum_pair;
+	}
+
+
+	}
