@@ -28,6 +28,14 @@ struct min_by_value
 {
 	bool operator() (std::pair<int, float> a, std::pair<int, float> b) 
 	{
+		if (std::isnan(a.second))
+	    {
+	      return false; // Assume NaN is greater than *any* non-NaN value.
+	    }
+	    if (std::isnan(b.second))
+	    {
+	      return true; // Assume *any* non-NaN value is smaller than NaN.
+	    }
 		return a.second < b.second;
 	}
 };
@@ -125,7 +133,7 @@ std::map<int, float> Optimizer::minimum_HEV(string method)
 	return output;
 }
 
-std::pair<string, int> Optimizer::optimal_method(string method)
+std::tuple<string, int, int, float> Optimizer::optimal_method(string method)
 {
 	assert( (method == "L" || method == "ADMM" ) && "Choose in [""L"", ""ADMM""]" );
 
@@ -152,14 +160,14 @@ std::pair<string, int> Optimizer::optimal_method(string method)
 
 	if (min_dict.first == minimum_EV.first  && min_dict.second == minimum_EV.second)
 	{
-		std::pair<string, int> minimum_pair("EV", min_dict.first);
+		std::tuple<string, int, int, float> minimum_pair("EV",  0, min_dict.first, min_dict.second);
 		return minimum_pair;
 	}
 	else
 	{
-		std::pair<string, int> minimum_pair("HEV", min_dict.first);
+		int gear = std::distance(minimum_All.begin(), minimum_All.find(min_dict.first)) + 1;
+		std::tuple<string, int, int, float> minimum_pair("HEV", gear, min_dict.first, min_dict.second);
 		return minimum_pair;
 	}
 
-
-	}
+}

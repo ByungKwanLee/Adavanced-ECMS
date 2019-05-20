@@ -77,7 +77,7 @@ VehicleInfo::velocity =  60.4/3.6;
 VehicleInfo::accel = -0.132;
 Tool::ICEMG_parameter_update();
 
-Optimizer obj_optimizer(1,1,1,1);
+Optimizer obj_optimizer(-491,1,1,1);
 
 // cout << obj_optimizer.Lagrangian_Costmodeling("EV") << endl;
 // cout << obj_optimizer.Lagrangian_Costmodeling("HEV") << endl;
@@ -93,8 +93,7 @@ Optimizer obj_optimizer(1,1,1,1);
 // float ** minimum_HEV_ADMM = obj_optimizer.minimum_HEV("ADMM");
 
 // optimal method
-// cout <<obj_optimizer.optimal_method("ADMM").first << ", "
-// << obj_optimizer.optimal_method("ADMM").second<<endl;
+// cout <<std::get<3>(obj_optimizer.optimal_method("L")) <<endl;
 
 ros::Time end = ros::Time::now();
 

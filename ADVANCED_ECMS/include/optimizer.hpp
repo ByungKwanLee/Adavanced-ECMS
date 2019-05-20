@@ -4,7 +4,7 @@
 #include <eigen3/Eigen/Dense>
 #include <typeinfo>
 #include <map>
-#include <malloc.h>
+#include <tuple>
 
 using namespace std;
 
@@ -29,7 +29,7 @@ public:
 	Eigen::MatrixXf ADMM_Costmodeling(string mode);
 	std::pair<int, float> minimum_EV(string method);
 	std::map<int, float> minimum_HEV(string method);
-	std::pair<string, int> optimal_method(string method);
+	std::tuple<string, int, int, float> optimal_method(string method);
 
 	
 };
