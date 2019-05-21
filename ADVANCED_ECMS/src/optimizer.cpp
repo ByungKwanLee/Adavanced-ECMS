@@ -47,6 +47,7 @@ Optimizer::Optimizer(float lambda, float mu, float raw, float max_iter)
 	Optimizer::mu = mu;
 	Optimizer::raw = raw;
 	Optimizer::max_iter = max_iter;
+	Optimizer::En_FC_instant = Optimizer::En_FC_sum = 0;
 }
 
 
@@ -176,6 +177,8 @@ std::tuple<string, int, int, float> Optimizer::optimal_method(string method)
 
 	int cost_min_min_ind = std::min_element(cost_min.begin(), cost_min.end(), NaN_include<float>()) - cost_min.begin();
 
+	assert( isnan(cost_min[cost_min_min_ind]) == 0 && "No cost and No soc, too much demand");
+
 	if( mode[cost_min_min_ind] == 0 ) // EV
 	{
 		std::tuple<string, int, int, float> minimum_pair("EV",  
@@ -183,7 +186,8 @@ std::tuple<string, int, int, float> Optimizer::optimal_method(string method)
 		Optimizer::optimal_inform=minimum_pair;
 		return minimum_pair;
 	}
-	else{
+	else
+	{
 		std::tuple<string, int, int, float> minimum_pair("HEV",  
 			cost_min_min_ind + 1, minimum_HEV_ind[cost_min_min_ind], cost_min[cost_min_min_ind]);
 		Optimizer::optimal_inform=minimum_pair;
@@ -198,5 +202,18 @@ void Optimizer::SOC_update()
 	MG::dSOC_HEV(std::get<1>(Optimizer::optimal_inform)-1, std::get<2>(Optimizer::optimal_inform));
 
 	MG::SOC = MG::SOC + correction * VehicleInfo::time_rt;
+}
 
+
+void Optimizer::En_FC_rt(bool print)
+{
+	Optimizer::En_FC_instant = std::get<0>(Optimizer::optimal_inform) == "EV" ? 0 : 
+	ICE::FC_HEV(std::get<1>(Optimizer::optimal_inform)-1, std::get<2>(Optimizer::optimal_inform));
+
+	assert(Optimizer::En_FC_instant >= 0 && "No En_FC should be positive");
+
+	Optimizer::En_FC_sum += Optimizer::En_FC_instant;
+	if (print) cout << "[Sum/instant] Engine FC : "<< 
+		Optimizer::En_FC_sum<<", "
+		<<Optimizer::En_FC_instant << endl<<endl;
 }

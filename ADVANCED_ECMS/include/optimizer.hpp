@@ -32,6 +32,11 @@ public:
 	vector<vector<float>> minimum_HEV(string method);
 	std::tuple<string, int, int, float> optimal_method(string method);
 	void SOC_update();
+
+	void En_FC_rt(bool print = false);
+	float En_FC_sum;
+	float En_FC_instant;
+
 	
 };
 

@@ -13,7 +13,6 @@ float VehicleInfo::parameter[3] = {88.6,0.14,0.36};
 float VehicleInfo::wheel_radius=0.27; //[m]
 
 // real time variable
-float VehicleInfo::velocity_pre_rt = 0;
 float VehicleInfo::velocity_rt = 0;
 float VehicleInfo::accel_rt = 0;
 float VehicleInfo::time_rt = 0.02;
@@ -39,14 +38,16 @@ void VehicleInfo::velocity_update(float accel, float time)
 	{
 		VehicleInfo::accel_rt = 0;
 		VehicleInfo::velocity_rt = 0;
-	} 
+	}
+	else if( VehicleInfo::velocity_rt > 120)
+	{
+		VehicleInfo::velocity_rt = 120;
+	}
 	else 
 	{
 		VehicleInfo::accel_rt = accel;
-		VehicleInfo::velocity_rt = VehicleInfo::velocity_pre_rt + accel * time;
-		VehicleInfo::velocity_pre_rt = VehicleInfo::velocity_rt;
-
-		if(VehicleInfo::velocity_rt < 0) VehicleInfo::velocity_pre_rt = VehicleInfo::velocity_rt = VehicleInfo::accel_rt = 0;
+		VehicleInfo::velocity_rt += accel * time;
+		if(VehicleInfo::velocity_rt < 0) VehicleInfo::velocity_rt = VehicleInfo::accel_rt = 0;
 	}
 }
 
