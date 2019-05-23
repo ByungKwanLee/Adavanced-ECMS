@@ -61,7 +61,7 @@ ros::Publisher pub_raw = nh.advertise<std_msgs::Float32>("/raw",1);
 // VehicleInfo::accel = -0.8;
 // Tool::ICEMG_parameter_update();
 
-Optimizer obj_optimizer(0,0,2,100);
+Optimizer obj_optimizer(0,0,1,100);
 
 // real time processing part
 float HZ = 20;

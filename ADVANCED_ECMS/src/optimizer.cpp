@@ -286,7 +286,7 @@ void Optimizer::optimizer(string method)
 			}
 			Optimizer::SOC_correction();
 			Optimizer::mu += Optimizer::correction;
-			Optimizer::raw = 1.2*Optimizer::raw;
+			Optimizer::raw *= 1.5;
 		}
 		Optimizer::SOC_correction(true);
 		return;
