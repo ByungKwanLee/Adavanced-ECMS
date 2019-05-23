@@ -44,8 +44,8 @@ struct min_by_value
 Optimizer::Optimizer(float lambda, float mu, float raw, float max_iter)
 {
 	Optimizer::lambda_init = lambda;
-	Optimizer::mu = mu;
-	Optimizer::raw = raw;
+	Optimizer::mu_init = mu;
+	Optimizer::raw_init = raw;
 	Optimizer::max_iter = max_iter;
 	Optimizer::En_FC_instant = Optimizer::En_FC_sum = 0;
 }
@@ -136,6 +136,34 @@ vector<vector<float>> Optimizer::minimum_HEV(string method)
 	return output;
 }
 
+void Optimizer::Regenerative_optimal(string method)
+{
+	assert( (method == "L" || method == "ADMM" ) && "Choose in [""L"", ""ADMM""]" );
+	vector<float> minimum_EV;
+	if(method == "L")
+	{
+		// L method
+		minimum_EV  = Optimizer::minimum_EV("L");
+	}
+	else
+	{
+		// ADMM method
+		minimum_EV  = Optimizer::minimum_EV("ADMM");
+	}
+
+
+	vector<float>::iterator  min_EV_Regen = std::min_element(minimum_EV.begin(), minimum_EV.end(), NaN_include<float>());
+	int min_EV_Regen_ind = min_EV_Regen - minimum_EV.begin();
+
+	assert( isnan(*min_EV_Regen) == 0 && "No cost and No soc, too much demand");
+
+
+	std::tuple<string, int, int, float> minimum_pair("EV",  
+		min_EV_Regen_ind + 1, -2, *min_EV_Regen);
+
+	Optimizer::optimal_inform = minimum_pair;
+}
+
 void Optimizer::optimal_method(string method)
 {
 	assert( (method == "L" || method == "ADMM" ) && "Choose in [""L"", ""ADMM""]" );
@@ -222,23 +250,46 @@ void Optimizer::optimizer(string method)
 	assert( (method == "L" || method == "ADMM" ) && "Choose in [""L"", ""ADMM""]" );
 
 	Optimizer::lambda = Optimizer::lambda_init;
-
-
+	Optimizer::mu = Optimizer::mu_init;
+	Optimizer::raw = Optimizer::raw_init;
 
 	if(method == "L")
 	{
 		for(int ind = 0; ind < Optimizer::max_iter; ind ++)
 		{
-			Optimizer::optimal_method(method);
+			if( VehicleInfo::accel > 0 )
+			{
+				Optimizer::optimal_method("L");
+			}
+			else
+			{
+				Optimizer::Regenerative_optimal("L");
+			}
 			Optimizer::SOC_correction();
 			Optimizer::lambda += MG::Bat_Quantity * 3600 * Optimizer::correction;	
 		}
-		Optimizer::SOC_correction(true);	
+		Optimizer::SOC_correction(true);
+		return;
 	}
 	else
 	{
 		
-
+		for(int ind = 0; ind < Optimizer::max_iter; ind ++)
+		{
+			if( VehicleInfo::accel > 0 )
+			{
+				Optimizer::optimal_method("ADMM");
+			}
+			else
+			{
+				Optimizer::Regenerative_optimal("ADMM");
+			}
+			Optimizer::SOC_correction();
+			Optimizer::mu += Optimizer::correction;
+			Optimizer::raw = 1.2*Optimizer::raw;
+		}
+		Optimizer::SOC_correction(true);
+		return;
 		
 	}
 }

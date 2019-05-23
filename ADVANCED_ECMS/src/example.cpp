@@ -13,6 +13,8 @@
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Int32.h>
+#include <geometry_msgs/Twist.h>
+
 // getcwd
 // #include <unistd.h>
 // std::string GetCurrentWorkingDir( void ) {
@@ -26,20 +28,20 @@ using namespace std;
 using namespace LBK;
 
 // check sum for callback 
-int i = 0;
+// int i = 0;
 
-void accel_callback(const std_msgs::Float32::ConstPtr & accel_data)
-{	
-	VehicleInfo::velocity_update(accel_data->data);
-	// cout << "velocity and accel : "<< VehicleInfo::velocity_rt <<", "<< VehicleInfo::accel_rt << endl;
-	i += 1;
-} 
+// void accel_callback(const std_msgs::Float32::ConstPtr & accel_data)
+// {	
+// 	VehicleInfo::velocity_update(accel_data->data);
+// 	// cout << "velocity and accel : "<< VehicleInfo::velocity_rt <<", "<< VehicleInfo::accel_rt << endl;
+// 	i += 1;
+// } 
 
-void accel_nocallback()
+void accel_callback(const geometry_msgs::Twist::ConstPtr & accel_data)
 {	
-	// friction for ground and wind
-	VehicleInfo::velocity_update(-0.3);
+	VehicleInfo::velocity_update((accel_data->linear).x);
 	// cout << "velocity and accel : "<< VehicleInfo::velocity_rt <<", "<< VehicleInfo::accel_rt << endl;
+	// i += 1;
 }
 
 
@@ -48,52 +50,61 @@ int main(int argc, char ** argv){
 // ros setting for making node
 ros::init(argc, argv, "Advanced_ecms_node");
 ros::NodeHandle nh;
-ros::Subscriber sub = nh.subscribe("/accel", 1, accel_callback);
+ros::Subscriber sub = nh.subscribe("/joy_teleop/cmd_vel", 1, accel_callback);
+// ros::Subscriber sub = nh.subscribe("/accel", 1, accel_callback);
 ros::Publisher pub_vel = nh.advertise<std_msgs::Float32>("/velocity", 1);
 ros::Publisher pub_soc = nh.advertise<std_msgs::Float32>("/soc", 1);
 ros::Publisher pub_mass = nh.advertise<std_msgs::Float32>("/mass", 1);
 ros::Publisher pub_mode = nh.advertise<std_msgs::Int32>("/mode", 1);
 ros::Publisher pub_gear = nh.advertise<std_msgs::Int32>("/gear", 1);
 ros::Publisher pub_lambda = nh.advertise<std_msgs::Float32>("/lambda", 1);
+ros::Publisher pub_mu = nh.advertise<std_msgs::Float32>("/mu",1);
+ros::Publisher pub_raw = nh.advertise<std_msgs::Float32>("/raw",1);
 
 // MG::SOC = 0.6;
-// VehicleInfo::velocity =  11.76*3.6/3.6;
-// VehicleInfo::accel = 4;
+// VehicleInfo::velocity =  48/3.6;
+// VehicleInfo::accel = 1;
 // Tool::ICEMG_parameter_update();
 
-Optimizer obj_optimizer(0,1.5,1000,pow(10,3));
+Optimizer obj_optimizer(-491,0,1,100);
 
 
-// real time processing part
-ros::Rate rate(50); // HZ
+// obj_optimizer.optimizer("L");
+// cout << std::get<1>(obj_optimizer.optimal_inform) << endl;
+// cout << obj_optimizer.Lagrangian_Costmodeling("HEV").row(2) << endl;
+
+// // real time processing part
+ros::Rate rate(12); // HZ
 while(ros::ok())
 {	
 	ros::Time start = ros::Time::now();
-	int i_copy = i;
+	// int i_copy = i;
 
 	// ros spin for subscribing rt var : accel
 	ros::spinOnce();
 
-	// if no callback, then deceleration for friction
-	if (i == i_copy) accel_nocallback();
+	// if (i == i_copy) {rate.sleep(); continue;}
+
+	// limitation of int byte
+	// if (i > 10000) i = 0;
 
 	// update from rt var -> optimizer var
 	VehicleInfo::for_optimizer();
 
 	Tool::ICEMG_parameter_update();
-	// limitation of int byte
-	if (i > 10000) i = 0;
-
-	ros::Time end = ros::Time::now();
 
 	obj_optimizer.optimizer("L");
 	// obj_optimizer.optimizer("ADMM");
 
 	obj_optimizer.En_FC_rt(false);
 
+	ros::Time end = ros::Time::now();
+
+	cout << "Processing Time : "<< (end-start).toSec() <<endl;
+
 	// publish velocity
 	std_msgs::Float32 msg_vel; 
-	msg_vel.data = VehicleInfo::velocity_rt*3.6;
+	msg_vel.data = VehicleInfo::velocity*3.6;
 	pub_vel.publish(msg_vel);
 
 	// publish mass
@@ -113,13 +124,24 @@ while(ros::ok())
 
 	// publish mode
 	std_msgs::Int32 msg_mode; 
-	msg_mode.data = std::get<0>(obj_optimizer.optimal_inform)=="EV" ? 0 : 1;
+	msg_mode.data = int((std::get<0>(obj_optimizer.optimal_inform) == "EV" ? 0 : 1) )
+		+ int((std::get<2>(obj_optimizer.optimal_inform) == -2 ? -1 : 0));
 	pub_mode.publish(msg_mode);
 
 	// publish lambda
 	std_msgs::Float32 msg_lambda;
 	msg_lambda.data = obj_optimizer.lambda;
 	pub_lambda.publish(msg_lambda);
+
+	// publish mu
+	std_msgs::Float32 msg_mu;
+	msg_mu.data = obj_optimizer.mu;
+	pub_mu.publish(msg_mu);
+
+	// publish raw
+	std_msgs::Float32 msg_raw;
+	msg_raw.data = obj_optimizer.raw;
+	pub_raw.publish(msg_raw);
 
 	// Processing time
 	// cout << "Optimal Mode : " <<std::get<0>(obj_optimizer.optimal_inform)
@@ -134,11 +156,6 @@ while(ros::ok())
 	// sleep thread
 	rate.sleep();
 }
-
-
-
-
-
 
 
 

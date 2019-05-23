@@ -11,27 +11,31 @@ const int Tool::NumGrid = 100;
 // ICEMG_update
 void Tool::ICEMG_parameter_update()
 {
+
 	// Voc, Rint
 	Tool::Voc(); Tool::Rint();
 
 	// EV of W, T, Eta1
 	Tool::W1_EV(); Tool::W1_EV_constr(); //W1_EV, W1_EV_constr 
-	Tool::T1_EV_max(); Tool::T1_EV(); //after constraints, T1_EV
+	Tool::T1_EV_max(); Tool::T1_EV(); Tool::T1_EV_constr(); //after constraints, T1_EV
 	Tool::Eta1_EV();
 
 	// EV of P estimation
-	Tool::P1elec_EV(); Tool::PbatD_EV(); Tool::dSOC_EV(); //after constraints
+	Tool::P1elec_EV(); Tool::PbatD_EV(); Tool::dSOC_EV(); //after constraints	
+	
 
-	// HEV of Wi, Ti
-	Tool::Wi_HEV(); Tool::Wi_HEV_rep();
-	Tool::Ti_max(); Tool::Ti_HEV(); Tool::FC_HEV();
+	if( VehicleInfo::accel > 0)
+	{
+		// HEV of Wi, Ti
+		Tool::Wi_HEV(); Tool::Wi_HEV_rep();
+		Tool::Ti_max(); Tool::Ti_HEV(); Tool::FC_HEV();
 
-	// HEV of W1 T1 Eta1
-	Tool::W1_HEV(); Tool::T1_HEV(); Tool::Eta1_HEV();
+		// HEV of W1 T1 Eta1
+		Tool::W1_HEV(); Tool::T1_HEV(); Tool::Eta1_HEV();
 
-	// HEV of P estimation
-	Tool::P1elec_HEV(); Tool::PbatD_HEV(); Tool::dSOC_HEV();
-
+		// HEV of P estimation
+		Tool::P1elec_HEV(); Tool::PbatD_HEV(); Tool::dSOC_HEV();
+	}
 
 }
 
@@ -85,13 +89,23 @@ Eigen::VectorXf Tool::T1_EV(bool update) {
 	v = (VehicleInfo::mass*VehicleInfo::accel + VehicleInfo::Frl())  
 	* ( VehicleInfo::wheel_radius / (ICE::FD_Ratio*ICE::FD_EFF*ICE::TM_Eff) ) * ICE::TMR.cwiseInverse();
 
+	if(update) MG::T1_EV = v;
+	return v;
+} //nothing makes effect
+
+Eigen::VectorXf Tool::T1_EV_constr(bool update) {
+
+	Eigen::VectorXf v;
+	v = (VehicleInfo::mass*VehicleInfo::accel + VehicleInfo::Frl())  
+	* ( VehicleInfo::wheel_radius / (ICE::FD_Ratio*ICE::FD_EFF*ICE::TM_Eff) ) * ICE::TMR.cwiseInverse();
+
 	for(int ind=0; ind<v.size(); ind++)
 	{
-		if (isnan(MG::T1_EV_max(ind))) v(ind) = NAN; continue;
+		if (isnan(MG::T1_EV_max(ind))) {v(ind) = NAN; continue;}
 		if( v(ind) > MG::T1_EV_max(ind) || v(ind) < -MG::T1_EV_max(ind)) v(ind) = NAN;
 	}
 
-	if(update) MG::T1_EV = v;
+	if(update) MG::T1_EV_constr = v;
 	return v;
 } //nothing makes effect
 
@@ -103,7 +117,7 @@ Eigen::VectorXf Tool::Eta1_EV(bool update)
 	for (int ind =0; ind < v.size(); ind++)
 	{
 		v(ind) = interp_Tool::interpolate_2d(MG::MG_mapRPM, MG::MG_mapTrq, MG::MG_mapData, 
-						abs(MG::W1_EV_constr(ind)), abs(MG::T1_EV(ind)));
+						abs(MG::W1_EV_constr(ind)), abs(MG::T1_EV_constr(ind)));
 	}
 
 	if(update) MG::Eta1_EV = v;
@@ -115,7 +129,7 @@ Eigen::VectorXf Tool::Eta1_EV(bool update)
 Eigen::VectorXf Tool::P1elec_EV(bool update)
 {
 
-	Eigen::VectorXf W1T1 = MG::W1_EV_constr.cwiseProduct(MG::T1_EV);
+	Eigen::VectorXf W1T1 = MG::W1_EV_constr.cwiseProduct(MG::T1_EV_constr);
 	Eigen::VectorXf v(W1T1.size());	
 	for (int ind =0; ind < v.size(); ind++)
 	{
@@ -202,9 +216,9 @@ Eigen::MatrixXf Tool::Ti_HEV(bool update)
 	for(int ind = 0; ind<v.rows(); ind ++)
 	{
 		float Ti_HEV_max = interp_Tool::interpolate_1d(ICE::En_maxRPM, ICE::En_maxTrq, ICE::Wi_HEV(ind), false);
+		if (isnan(Ti_HEV_max)) v.row(ind) = NAN*Eigen::VectorXf::Ones(v.cols());
 		for(int ind2=0; ind2<v.cols(); ind2++)
 		{
-			if (isnan(Ti_HEV_max)) v(ind, ind2) = NAN; continue;
 			if ( v(ind, ind2) > Ti_HEV_max ) v(ind, ind2) = NAN;
 		}
 	}
@@ -246,13 +260,12 @@ Eigen::MatrixXf Tool::T1_HEV(bool update)
 {
 	Eigen::MatrixXf v;
 	v = MG::T1_EV.replicate<1, Tool::NumGrid>()-ICE::Ti_HEV;
-
 	for(int ind = 0; ind<v.rows(); ind ++)
 	{
 		float T1_HEV_max = interp_Tool::interpolate_1d(MG::MG_maxRPM, MG::MG_maxTrq, abs(ICE::Wi_HEV(ind)), false);
+		if (isnan(T1_HEV_max)) v.row(ind) = NAN*Eigen::VectorXf::Ones(v.cols());
 		for(int ind2=0; ind2<v.cols(); ind2++)
 		{
-			if (isnan(T1_HEV_max)) v(ind, ind2) = NAN; continue;
 			if ( v(ind, ind2) > T1_HEV_max || v(ind,ind2) < -T1_HEV_max ) v(ind, ind2) = NAN;
 		}
 	}

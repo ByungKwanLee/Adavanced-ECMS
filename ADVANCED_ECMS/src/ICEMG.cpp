@@ -54,6 +54,7 @@ float MG::W1_EV_max = Tool::W1_EV_max(); //constraints
 Eigen::VectorXf MG::T1_EV_max = Tool::T1_EV_max(); //constraints
 
 Eigen::VectorXf MG::T1_EV = Tool::T1_EV(false);
+Eigen::VectorXf MG::T1_EV_constr = Tool::T1_EV_constr(false);
 Eigen::VectorXf MG::Eta1_EV = Tool::Eta1_EV(false);
 
 // EV of P estimation

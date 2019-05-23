@@ -17,8 +17,6 @@ class Optimizer
 {
 
 private:
-	float mu;
-	float raw;
 	float max_iter;
 	float correction;
 
@@ -33,12 +31,17 @@ public:
 	void optimal_method(string method);
 	void SOC_correction(bool update = false);
 	void optimizer(string method);
+	void Regenerative_optimal(string method);
 
 	void En_FC_rt(bool print = false);
 	float En_FC_sum;
 	float En_FC_instant;
 	float lambda;
 	float lambda_init;
+	float mu_init;
+	float mu;
+	float raw_init;
+	float raw;
 
 	
 };

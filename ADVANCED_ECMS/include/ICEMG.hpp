@@ -69,7 +69,7 @@ public:
 
 	// EV 
 	static Eigen::VectorXf W1_EV;	static Eigen::VectorXf W1_EV_constr;
-	static Eigen::VectorXf T1_EV;
+		static Eigen::VectorXf T1_EV; static Eigen::VectorXf T1_EV_constr;
 	static Eigen::VectorXf Eta1_EV;
 	static Eigen::VectorXf P1elec_EV;
 	static Eigen::VectorXf PbatD_EV;
@@ -138,6 +138,7 @@ public :
 	// constraints fucntion
 	static float W1_EV_max(); //constraints
 	static Eigen::VectorXf W1_EV_constr(bool update = true);
+	static Eigen::VectorXf T1_EV_constr(bool update = true);
 	static Eigen::VectorXf T1_EV_max(bool update = true); //constraints
 	static float W1_HEV_max(); //constraints
 	static float Wi_HEV_min(); //constraints
