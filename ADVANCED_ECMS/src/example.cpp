@@ -27,28 +27,23 @@
 using namespace std;
 using namespace LBK;
 
-// check sum for callback 
-// int i = 0;
-
 // void accel_callback(const std_msgs::Float32::ConstPtr & accel_data)
 // {	
 // 	VehicleInfo::velocity_update(accel_data->data);
 // 	// cout << "velocity and accel : "<< VehicleInfo::velocity_rt <<", "<< VehicleInfo::accel_rt << endl;
-// 	i += 1;
 // } 
 
 void accel_callback(const geometry_msgs::Twist::ConstPtr & accel_data)
 {	
 	VehicleInfo::velocity_update((accel_data->linear).x);
 	// cout << "velocity and accel : "<< VehicleInfo::velocity_rt <<", "<< VehicleInfo::accel_rt << endl;
-	// i += 1;
 }
 
 
 int main(int argc, char ** argv){
 
 // ros setting for making node
-ros::init(argc, argv, "Advanced_ecms_node");
+ros::init(argc, argv, "advanced_ecms_node");
 ros::NodeHandle nh;
 ros::Subscriber sub = nh.subscribe("/joy_teleop/cmd_vel", 1, accel_callback);
 // ros::Subscriber sub = nh.subscribe("/accel", 1, accel_callback);
@@ -62,45 +57,42 @@ ros::Publisher pub_mu = nh.advertise<std_msgs::Float32>("/mu",1);
 ros::Publisher pub_raw = nh.advertise<std_msgs::Float32>("/raw",1);
 
 // MG::SOC = 0.6;
-// VehicleInfo::velocity =  48/3.6;
-// VehicleInfo::accel = 1;
+// VehicleInfo::velocity =  100/3.6;
+// VehicleInfo::accel = -0.8;
 // Tool::ICEMG_parameter_update();
 
-Optimizer obj_optimizer(-491,0,1,100);
+Optimizer obj_optimizer(0,0,2,100);
 
-
-// obj_optimizer.optimizer("L");
-// cout << std::get<1>(obj_optimizer.optimal_inform) << endl;
-// cout << obj_optimizer.Lagrangian_Costmodeling("HEV").row(2) << endl;
-
-// // real time processing part
-ros::Rate rate(12); // HZ
+// real time processing part
+float HZ = 20;
+VehicleInfo::time_rt = 1./HZ;
+ros::Rate rate(HZ); // HZ
 while(ros::ok())
 {	
 	ros::Time start = ros::Time::now();
-	// int i_copy = i;
 
 	// ros spin for subscribing rt var : accel
 	ros::spinOnce();
 
-	// if (i == i_copy) {rate.sleep(); continue;}
-
-	// limitation of int byte
-	// if (i > 10000) i = 0;
-
 	// update from rt var -> optimizer var
 	VehicleInfo::for_optimizer();
 
-	Tool::ICEMG_parameter_update();
+	int num = 0;
+	bool update = false;
+	while(!update)
+	{
+		update = Tool::ICEMG_parameter_update();
+		num += 1;
+	}
 
-	obj_optimizer.optimizer("L");
-	// obj_optimizer.optimizer("ADMM");
+	// obj_optimizer.optimizer("L");
+	obj_optimizer.optimizer("ADMM");
 
 	obj_optimizer.En_FC_rt(false);
 
 	ros::Time end = ros::Time::now();
 
-	cout << "Processing Time : "<< (end-start).toSec() <<endl;
+	cout << "Update num : "<< num <<", Processing Time : "<< (end-start).toSec() <<endl;
 
 	// publish velocity
 	std_msgs::Float32 msg_vel; 
@@ -143,21 +135,22 @@ while(ros::ok())
 	msg_raw.data = obj_optimizer.raw;
 	pub_raw.publish(msg_raw);
 
-	// Processing time
-	// cout << "Optimal Mode : " <<std::get<0>(obj_optimizer.optimal_inform)
-	// << ", Optimal gear : " << std::get<1>(obj_optimizer.optimal_inform)
-	// << ", grid number : " <<std::get<2>(obj_optimizer.optimal_inform)
-	// <<", cost : " <<std::get<3>(obj_optimizer.optimal_inform)
-	// <<", SOC : "<<MG::SOC
-	// <<", velocity[km/h] : " <<VehicleInfo::velocity*3.6
-	// <<", accel[m/s2] : " << VehicleInfo::accel
-	// <<endl<<endl;
-
 	// sleep thread
 	rate.sleep();
 }
 
 
+
+
+// Processing time
+// cout << "Optimal Mode : " <<std::get<0>(obj_optimizer.optimal_inform)
+// << ", Optimal gear : " << std::get<1>(obj_optimizer.optimal_inform)
+// << ", grid number : " <<std::get<2>(obj_optimizer.optimal_inform)
+// <<", cost : " <<std::get<3>(obj_optimizer.optimal_inform)
+// <<", SOC : "<<MG::SOC
+// <<", velocity[km/h] : " <<VehicleInfo::velocity*3.6
+// <<", accel[m/s2] : " << VehicleInfo::accel
+// <<endl<<endl;
 
 // P_d
 // cout<< "Tool::P_d() : "<< VehicleInfo::P_d() <<endl<<endl;

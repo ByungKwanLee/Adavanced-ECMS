@@ -9,33 +9,99 @@ using namespace LBK;
 const int Tool::NumGrid = 100;
 
 // ICEMG_update
-void Tool::ICEMG_parameter_update()
+bool Tool::ICEMG_parameter_update()
 {
+	// regen
+	if(VehicleInfo::accel <= 0)
+	{
+		// Voc, Rint
+		Tool::Voc(); Tool::Rint();
+
+		// EV of W, T, Eta1
+		Tool::W1_EV(); Tool::W1_EV_constr(); //W1_EV, W1_EV_constr
+		Tool::T1_EV_max(); Tool::T1_EV(); 
+
+		Eigen::VectorXf v = Tool::T1_EV_constr(); //after constraints, T1_EV
+		int i=0;
+		for (int ind = 0; ind<v.size(); ind++)
+		{ 
+			if(isnan(v(ind)))
+			{
+				i+=1;
+			}
+			else
+			{
+				break;
+			}
+		}
+		if(i==v.size()) { VehicleInfo::accel += 0.01; return false;}
+
+		Tool::Eta1_EV();
+
+		// EV of P estimation
+		Tool::P1elec_EV(); Tool::PbatD_EV(); Tool::dSOC_EV(); //after constraints
+
+		return true;
+	}
+
 
 	// Voc, Rint
 	Tool::Voc(); Tool::Rint();
 
 	// EV of W, T, Eta1
-	Tool::W1_EV(); Tool::W1_EV_constr(); //W1_EV, W1_EV_constr 
-	Tool::T1_EV_max(); Tool::T1_EV(); Tool::T1_EV_constr(); //after constraints, T1_EV
-	Tool::Eta1_EV();
+	Tool::W1_EV(); Tool::W1_EV_constr(); //W1_EV, W1_EV_constr
+	Tool::T1_EV_max(); Tool::T1_EV();  //after constraints, T1_EV
+	
+	int i_=0;
+	Eigen::VectorXf v_ = Tool::T1_EV_constr();
+	for(int ind=0; ind<v_.size();ind++)
+	{
+		if(isnan(v_(ind)))
+		{
+			i_ += 1;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// HEV of Wi, Ti
+	Tool::Wi_HEV(); Tool::Wi_HEV_rep();
+	Tool::Ti_max(); Tool::Ti_HEV(); Tool::FC_HEV();
+	
+	// HEV of W1 T1
+	Tool::W1_HEV(); //after constraints, T1_EV
+	
+	int i__=0;
+	Eigen::MatrixXf v__ = Tool::T1_HEV();
+	for(int ind=0; ind<v__.rows();ind++)
+	{
+
+		for(int ind2=0; ind2 < v__.cols() ; ind2++)
+		{
+			if(isnan(v__(ind, ind2)))
+			{
+				i__ += 1;
+			}
+			else
+			{
+				break;
+			}
+		}	
+	}
+
+	if(i_ == v_.size() && i__ == v__.size()) {VehicleInfo::accel-=0.01; return false;}
+
+
 
 	// EV of P estimation
-	Tool::P1elec_EV(); Tool::PbatD_EV(); Tool::dSOC_EV(); //after constraints	
+	Tool::Eta1_HEV(); Tool::P1elec_EV(); Tool::PbatD_EV(); Tool::dSOC_EV(); //after constraints
 	
+	// HEV of P estimation
+	Tool::Eta1_EV(); Tool::P1elec_HEV(); Tool::PbatD_HEV(); Tool::dSOC_HEV();
 
-	if( VehicleInfo::accel > 0)
-	{
-		// HEV of Wi, Ti
-		Tool::Wi_HEV(); Tool::Wi_HEV_rep();
-		Tool::Ti_max(); Tool::Ti_HEV(); Tool::FC_HEV();
-
-		// HEV of W1 T1 Eta1
-		Tool::W1_HEV(); Tool::T1_HEV(); Tool::Eta1_HEV();
-
-		// HEV of P estimation
-		Tool::P1elec_HEV(); Tool::PbatD_HEV(); Tool::dSOC_HEV();
-	}
+	return true;
 
 }
 

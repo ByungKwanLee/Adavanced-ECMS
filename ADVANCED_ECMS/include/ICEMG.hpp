@@ -101,7 +101,7 @@ public :
 	static const int NumGrid;
 
 	// ICEMG_update
-	static void ICEMG_parameter_update();
+	static bool ICEMG_parameter_update();
 
 
 	// Voc, Rint

@@ -181,9 +181,9 @@ void Optimizer::optimal_method(string method)
 	{
 		// ADMM method
 		minimum_EV  = Optimizer::minimum_EV("ADMM");
-		minimum_HEV = Optimizer::minimum_HEV("ADMM");	
+		minimum_HEV = Optimizer::minimum_HEV("ADMM");
 	}
-	
+
 	vector<float> minimum_HEV_ind=minimum_HEV[0];
 	vector<float> minimum_HEV_val=minimum_HEV[1];
 	vector<vector<float>> minimum_ALL(minimum_EV.size(), vector<float>(2));
@@ -205,7 +205,7 @@ void Optimizer::optimal_method(string method)
 
 	int cost_min_min_ind = std::min_element(cost_min.begin(), cost_min.end(), NaN_include<float>()) - cost_min.begin();
 
-	assert( isnan(cost_min[cost_min_min_ind]) == 0 && "No cost and No soc, too much demand");
+	assert( isnan(cost_min[cost_min_min_ind]) == 0 && "No cost and No soc, too much demand" );
 
 	if( mode[cost_min_min_ind] == 0 ) // EV
 	{
