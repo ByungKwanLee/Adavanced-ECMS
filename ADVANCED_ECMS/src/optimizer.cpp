@@ -43,7 +43,7 @@ struct min_by_value
 
 Optimizer::Optimizer(float lambda, float mu, float raw, float max_iter)
 {
-	Optimizer::lambda = lambda;
+	Optimizer::lambda_init = lambda;
 	Optimizer::mu = mu;
 	Optimizer::raw = raw;
 	Optimizer::max_iter = max_iter;
@@ -136,7 +136,7 @@ vector<vector<float>> Optimizer::minimum_HEV(string method)
 	return output;
 }
 
-std::tuple<string, int, int, float> Optimizer::optimal_method(string method)
+void Optimizer::optimal_method(string method)
 {
 	assert( (method == "L" || method == "ADMM" ) && "Choose in [""L"", ""ADMM""]" );
 
@@ -184,24 +184,22 @@ std::tuple<string, int, int, float> Optimizer::optimal_method(string method)
 		std::tuple<string, int, int, float> minimum_pair("EV",  
 			cost_min_min_ind + 1, -1, cost_min[cost_min_min_ind]);
 		Optimizer::optimal_inform=minimum_pair;
-		return minimum_pair;
 	}
 	else
 	{
 		std::tuple<string, int, int, float> minimum_pair("HEV",  
 			cost_min_min_ind + 1, minimum_HEV_ind[cost_min_min_ind], cost_min[cost_min_min_ind]);
 		Optimizer::optimal_inform=minimum_pair;
-		return minimum_pair;
 	}
 }
 
-void Optimizer::SOC_update()
+void Optimizer::SOC_correction(bool update)
 {
-	float correction = std::get<0>(Optimizer::optimal_inform) == "EV" ? 
+	Optimizer::correction = std::get<0>(Optimizer::optimal_inform) == "EV" ? 
 	MG::dSOC_EV(std::get<1>(Optimizer::optimal_inform)-1) : 
 	MG::dSOC_HEV(std::get<1>(Optimizer::optimal_inform)-1, std::get<2>(Optimizer::optimal_inform));
 
-	MG::SOC = MG::SOC + correction * VehicleInfo::time_rt;
+	if(update) MG::SOC = MG::SOC + correction * VehicleInfo::time_rt;
 }
 
 
@@ -216,4 +214,31 @@ void Optimizer::En_FC_rt(bool print)
 	if (print) cout << "[Sum/instant] Engine FC : "<< 
 		Optimizer::En_FC_sum<<", "
 		<<Optimizer::En_FC_instant << endl<<endl;
+}
+
+void Optimizer::optimizer(string method)
+{
+
+	assert( (method == "L" || method == "ADMM" ) && "Choose in [""L"", ""ADMM""]" );
+
+	Optimizer::lambda = Optimizer::lambda_init;
+
+
+
+	if(method == "L")
+	{
+		for(int ind = 0; ind < Optimizer::max_iter; ind ++)
+		{
+			Optimizer::optimal_method(method);
+			Optimizer::SOC_correction();
+			Optimizer::lambda += MG::Bat_Quantity * 3600 * Optimizer::correction;	
+		}
+		Optimizer::SOC_correction(true);	
+	}
+	else
+	{
+		
+
+		
+	}
 }

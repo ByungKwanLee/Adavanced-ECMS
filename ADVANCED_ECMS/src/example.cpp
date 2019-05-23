@@ -54,36 +54,14 @@ ros::Publisher pub_soc = nh.advertise<std_msgs::Float32>("/soc", 1);
 ros::Publisher pub_mass = nh.advertise<std_msgs::Float32>("/mass", 1);
 ros::Publisher pub_mode = nh.advertise<std_msgs::Int32>("/mode", 1);
 ros::Publisher pub_gear = nh.advertise<std_msgs::Int32>("/gear", 1);
+ros::Publisher pub_lambda = nh.advertise<std_msgs::Float32>("/lambda", 1);
 
-MG::SOC = 0.6;
-VehicleInfo::velocity =  11.76*3.6/3.6;
-VehicleInfo::accel = 4;
-Tool::ICEMG_parameter_update();
+// MG::SOC = 0.6;
+// VehicleInfo::velocity =  11.76*3.6/3.6;
+// VehicleInfo::accel = 4;
+// Tool::ICEMG_parameter_update();
 
-Optimizer obj_optimizer(-491,1,1,1);
-
-// obj_optimizer.optimal_method("L");
-
-// cout << obj_optimizer.Lagrangian_Costmodeling("EV") << endl;
-// cout << obj_optimizer.Lagrangian_Costmodeling("HEV")<< endl;
-// cout << obj_optimizer.ADMM_Costmodeling("EV") << endl;
-// cout << obj_optimizer.ADMM_Costmodeling("HEV") << endl;
-
-// // L method
-// float * minimum_EV_L = obj_optimizer.minimum_EV("L");
-// float ** minimum_HEV_L = obj_optimizer.minimum_HEV("L");
-
-// // ADMM method
-// float * minimum_EV_ADMM = obj_optimizer.minimum_EV("ADMM");
-// float ** minimum_HEV_ADMM = obj_optimizer.minimum_HEV("ADMM");
-
-
-// Processing time
-// cout << "Optimal Mode : " <<std::get<0>(obj_optimizer.optimal_method("L"))
-// << ", Optimal gear : " << std::get<1>(obj_optimizer.optimal_method("L"))
-// << ", grid number : " <<std::get<2>(obj_optimizer.optimal_method("L"))
-// <<", cost : " <<std::get<3>(obj_optimizer.optimal_method("L"))
-// <<endl<<endl;
+Optimizer obj_optimizer(0,1.5,1000,pow(10,3));
 
 
 // real time processing part
@@ -108,7 +86,9 @@ while(ros::ok())
 
 	ros::Time end = ros::Time::now();
 
-	obj_optimizer.optimal_method("L");
+	obj_optimizer.optimizer("L");
+	// obj_optimizer.optimizer("ADMM");
+
 	obj_optimizer.En_FC_rt(false);
 
 	// publish velocity
@@ -122,7 +102,6 @@ while(ros::ok())
 	pub_mass.publish(msg_mass);
 
 	// publish SOC
-	obj_optimizer.SOC_update();
 	std_msgs::Float32 msg_SOC; 
 	msg_SOC.data = MG::SOC;
 	pub_soc.publish(msg_SOC);
@@ -136,6 +115,11 @@ while(ros::ok())
 	std_msgs::Int32 msg_mode; 
 	msg_mode.data = std::get<0>(obj_optimizer.optimal_inform)=="EV" ? 0 : 1;
 	pub_mode.publish(msg_mode);
+
+	// publish lambda
+	std_msgs::Float32 msg_lambda;
+	msg_lambda.data = obj_optimizer.lambda;
+	pub_lambda.publish(msg_lambda);
 
 	// Processing time
 	// cout << "Optimal Mode : " <<std::get<0>(obj_optimizer.optimal_inform)

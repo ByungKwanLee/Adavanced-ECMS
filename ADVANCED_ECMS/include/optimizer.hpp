@@ -17,10 +17,10 @@ class Optimizer
 {
 
 private:
-	float lambda;
 	float mu;
 	float raw;
 	float max_iter;
+	float correction;
 
 public:
 	std::tuple<string, int, int, float> optimal_inform;
@@ -30,12 +30,15 @@ public:
 	Eigen::MatrixXf ADMM_Costmodeling(string mode);
 	vector<float> minimum_EV(string method);
 	vector<vector<float>> minimum_HEV(string method);
-	std::tuple<string, int, int, float> optimal_method(string method);
-	void SOC_update();
+	void optimal_method(string method);
+	void SOC_correction(bool update = false);
+	void optimizer(string method);
 
 	void En_FC_rt(bool print = false);
 	float En_FC_sum;
 	float En_FC_instant;
+	float lambda;
+	float lambda_init;
 
 	
 };
