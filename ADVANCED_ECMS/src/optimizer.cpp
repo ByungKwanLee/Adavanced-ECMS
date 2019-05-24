@@ -120,6 +120,8 @@ vector<vector<float>> Optimizer::minimum_HEV(string method)
 	vector<vector<float>> output(2, vector<float>(v.rows()));
 	vector<float>::iterator v_min_row;
 	vector<float> A, B;
+
+	#pragma omp pararrel for
 	for(int ind=0; ind < v.rows(); ind++)
 	{
 		Eigen::VectorXf row_vec = v.row(ind);
@@ -129,6 +131,7 @@ vector<vector<float>> Optimizer::minimum_HEV(string method)
 		B.push_back(*v_min_row);
 	}
 
+	#pragma omp parallel for
 	for(vector<vector<float>>::iterator it = output.begin(); it != output.end(); it++)
 	{
 			(*it) = it == output.begin() ? A : B;
@@ -187,6 +190,8 @@ void Optimizer::optimal_method(string method)
 	vector<float> minimum_HEV_ind=minimum_HEV[0];
 	vector<float> minimum_HEV_val=minimum_HEV[1];
 	vector<vector<float>> minimum_ALL(minimum_EV.size(), vector<float>(2));
+
+	#pragma omp parallel for
 	for(vector<vector<float>>::iterator it = minimum_ALL.begin(); it != minimum_ALL.end(); it++)
 	{
 		std::vector<float> v{minimum_EV[it-minimum_ALL.begin()], minimum_HEV_val[it-minimum_ALL.begin()]};
@@ -196,6 +201,8 @@ void Optimizer::optimal_method(string method)
 	std::vector<float> cost_min; // cost min (1,2,3,4,5,6)
 	std::vector<float> mode; // EV or HEV (1,2,3,4,5,6)
 	std::vector<float>::iterator min_row_ind_iter; // index iterator
+
+	#pragma omp parallel for
 	for(vector<vector<float>>::iterator it = minimum_ALL.begin(); it!=minimum_ALL.end(); it++)
 	{
 		min_row_ind_iter = std::min_element((*it).begin(), (*it).end(), NaN_include<float>());

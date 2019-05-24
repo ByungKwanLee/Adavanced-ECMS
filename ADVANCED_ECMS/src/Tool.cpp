@@ -1,6 +1,7 @@
 #include <ICEMG.hpp>
 #include <interp_tool.hpp>
 #include <VehicleInfo.hpp>
+// #include <omp.h>
 
 using namespace std;
 using namespace LBK;
@@ -139,6 +140,8 @@ Eigen::VectorXf Tool::W1_EV(bool update)
  Eigen::VectorXf Tool::W1_EV_constr(bool update)
  {
 	Eigen::VectorXf v_ = MG::W1_EV;
+
+	#pragma omp parallel for
 	for(int ind=0; ind<v_.size(); ind++)
 	{
 		if( v_(ind) > MG::W1_EV_max || v_(ind) < -MG::W1_EV_max) v_(ind) = NAN;
@@ -180,6 +183,7 @@ Eigen::VectorXf Tool::Eta1_EV(bool update)
 {
 	Eigen::VectorXf v(MG::W1_EV.size());
 
+	#pragma omp parallel for
 	for (int ind =0; ind < v.size(); ind++)
 	{
 		v(ind) = interp_Tool::interpolate_2d(MG::MG_mapRPM, MG::MG_mapTrq, MG::MG_mapData, 
@@ -197,6 +201,8 @@ Eigen::VectorXf Tool::P1elec_EV(bool update)
 
 	Eigen::VectorXf W1T1 = MG::W1_EV_constr.cwiseProduct(MG::T1_EV_constr);
 	Eigen::VectorXf v(W1T1.size());	
+
+	#pragma omp parallel for
 	for (int ind =0; ind < v.size(); ind++)
 	{
 		int sign = (W1T1(ind) >=0) ? 1 : -1;
@@ -212,6 +218,7 @@ Eigen::VectorXf Tool::PbatD_EV(bool update)
 	Eigen::VectorXf v;
 	v = MG::P1elec_EV + MG::P_aux * Eigen::VectorXf::Ones(MG::P1elec_EV.size());
 
+	#pragma omp parallel for
 	for(int ind=0; ind<v.size(); ind++)
 	{
 		if( v(ind) > MG::P_bat || v(ind) < -MG::P_bat) v(ind) = NAN;
@@ -226,6 +233,7 @@ Eigen::VectorXf Tool::dSOC_EV(bool update)
 {
 	Eigen::VectorXf v(MG::PbatD_EV.size());
 
+	#pragma omp parallel for
 	for (int ind = 0; ind<v.size(); ind++)
 	{
 		v(ind) =  (-MG::Voc + sqrt(pow(MG::Voc, 2)-4 * MG::PbatD_EV(ind) * MG::Rint)) / (2 * MG::Rint * MG::Bat_Quantity * 3600);
@@ -241,10 +249,13 @@ Eigen::VectorXf Tool::dSOC_EV(bool update)
 Eigen::VectorXf Tool::Wi_HEV(bool update)
 {
 	Eigen::VectorXf v = MG::W1_EV;
+
+	#pragma omp parallel for
 	for(int ind=0; ind<v.size(); ind++)
 	{
 		if( v(ind) > ICE::Wi_HEV_max || v(ind) < ICE::Wi_HEV_min) v(ind) = NAN;
 	}
+
 	if(update) ICE::Wi_HEV = v;
 	return v;
 } // W1_EV makes effect
@@ -260,6 +271,8 @@ Eigen::MatrixXf Tool::Wi_HEV_rep(bool update)
 Eigen::VectorXf Tool::Ti_max(bool update)
 {
 	Eigen::VectorXf v(ICE::Wi_HEV.size());
+
+	#pragma omp parallel for
 	for (int ind = 0; ind<v.size();ind++)
 	{
 		v(ind) = interp_Tool::interpolate_1d(ICE::En_maxRPM,ICE::En_maxTrq, ICE::Wi_HEV(ind), false);
@@ -273,12 +286,15 @@ Eigen::MatrixXf Tool::Ti_HEV(bool update)
 {
 
 	Eigen::MatrixXf v(ICE::TMR.size(), Tool::NumGrid);
+
+	#pragma omp parallel for
 	for(int gear=0; gear<ICE::TMR.size() ;gear++)
 	{	
 		v.row(gear) = Eigen::VectorXf::LinSpaced(Tool::NumGrid, 0, ICE::Ti_max(gear));
 	}
 
 
+	#pragma omp parallel for schedule(dynamic,1) collapse(2)
 	for(int ind = 0; ind<v.rows(); ind ++)
 	{
 		float Ti_HEV_max = interp_Tool::interpolate_1d(ICE::En_maxRPM, ICE::En_maxTrq, ICE::Wi_HEV(ind), false);
@@ -299,6 +315,7 @@ Eigen::MatrixXf Tool::FC_HEV(bool update)
 
 	Eigen::MatrixXf v(ICE::Wi_HEV_rep.rows(), ICE::Wi_HEV_rep.cols());
 
+	#pragma omp parallel for schedule(dynamic,1) collapse(2)
 	for (int ind =0; ind < v.rows(); ind++)
 	{
 		for(int ind2=0; ind2 <v.cols(); ind2++){
@@ -326,6 +343,8 @@ Eigen::MatrixXf Tool::T1_HEV(bool update)
 {
 	Eigen::MatrixXf v;
 	v = MG::T1_EV.replicate<1, Tool::NumGrid>()-ICE::Ti_HEV;
+
+	#pragma omp parallel for schedule(dynamic,1) collapse(2)
 	for(int ind = 0; ind<v.rows(); ind ++)
 	{
 		float T1_HEV_max = interp_Tool::interpolate_1d(MG::MG_maxRPM, MG::MG_maxTrq, abs(ICE::Wi_HEV(ind)), false);
@@ -345,6 +364,7 @@ Eigen::MatrixXf Tool::Eta1_HEV(bool update)
 
 	Eigen::MatrixXf v(MG::W1_HEV.rows(), MG::W1_HEV.cols());
 
+	#pragma omp parallel for schedule(dynamic,1) collapse(2)
 	for (int ind =0; ind < v.rows(); ind++)
 	{
 		for(int ind2=0; ind2 <v.cols(); ind2++){
@@ -363,7 +383,9 @@ Eigen::MatrixXf Tool::P1elec_HEV(bool update)
 {
 
 	Eigen::MatrixXf W1T1 = MG::W1_HEV.cwiseProduct(MG::T1_HEV);
-	Eigen::MatrixXf v(W1T1.rows(), W1T1.cols());	
+	Eigen::MatrixXf v(W1T1.rows(), W1T1.cols());
+
+	#pragma omp parallel for schedule(dynamic,1) collapse(2)
 	for (int ind =0; ind < v.rows(); ind++)
 	{
 		for(int ind2=0; ind2<v.cols();ind2++){
@@ -383,6 +405,7 @@ Eigen::MatrixXf Tool::PbatD_HEV(bool update)
 	Eigen::MatrixXf v;
 	v = MG::P1elec_HEV + MG::P_aux * Eigen::MatrixXf::Ones(MG::P1elec_HEV.rows(), MG::P1elec_HEV.cols());
 
+	#pragma omp parallel for schedule(dynamic,1) collapse(2)
 	for(int ind=0; ind<v.rows(); ind++)
 	{
 		for(int ind2=0; ind2 <v.cols(); ind2++)
@@ -400,6 +423,7 @@ Eigen::MatrixXf Tool::dSOC_HEV(bool update)
 {
 	Eigen::MatrixXf v(MG::PbatD_HEV.rows(), MG::PbatD_HEV.cols());
 
+	#pragma omp parallel for schedule(dynamic,1) collapse(2)
 	for (int ind = 0; ind<v.rows(); ind++)
 	{
 		for (int ind2=0;ind2<v.cols(); ind2++)
@@ -408,6 +432,7 @@ Eigen::MatrixXf Tool::dSOC_HEV(bool update)
 		}
 		
 	}
+	
 	if(update) MG::dSOC_HEV = v;
 	return v;
 } // PbatD_HEV makes effect
