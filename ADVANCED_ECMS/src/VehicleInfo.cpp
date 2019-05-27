@@ -1,7 +1,5 @@
-#include <iostream>
-#include <math.h>
 #include <VehicleInfo.hpp>
-#include <eigen3/Eigen/Dense>
+
 
 using namespace std;
 using namespace LBK;

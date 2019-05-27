@@ -43,6 +43,8 @@ add_library(${PROJECT_NAME}_lib
    src/Tool.cpp
    src/constraints.cpp
    src/ICEMG.cpp
+   src/performance.cpp
+   src/data_loader.cpp
 )
 
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

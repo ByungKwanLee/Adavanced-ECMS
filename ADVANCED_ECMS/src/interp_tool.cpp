@@ -1,5 +1,4 @@
 #include <interp_tool.hpp>
-#include <vector>
 
 using namespace std;
 using namespace LBK;

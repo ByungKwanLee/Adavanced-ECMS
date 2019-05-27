@@ -1,5 +1,3 @@
-#include <iostream>
-#include <math.h>
 #include <optimizer.hpp>
 #include <ICEMG.hpp>
 #include <VehicleInfo.hpp>
@@ -72,12 +70,12 @@ Eigen::MatrixXf Optimizer::ADMM_Costmodeling(string mode)
 
 	if (mode == "EV" )
 	{
-		Eigen::VectorXf H =  MG::dSOC_EV + Optimizer::mu * Eigen::VectorXf::Ones(MG::dSOC_EV.size());
+		Eigen::VectorXf H = 3600 * MG::Bat_Quantity * MG::dSOC_EV + Optimizer::mu * Eigen::VectorXf::Ones(MG::dSOC_EV.size());
 		return Optimizer::raw * H.cwiseProduct(H);
 	}
 	else
 	{
-		Eigen::MatrixXf H = MG::dSOC_HEV + Optimizer::mu * Eigen::MatrixXf::Ones(MG::dSOC_HEV.rows(), MG::dSOC_HEV.cols());
+		Eigen::MatrixXf H = 3600 * MG::Bat_Quantity * MG::dSOC_HEV + Optimizer::mu * Eigen::MatrixXf::Ones(MG::dSOC_HEV.rows(), MG::dSOC_HEV.cols());
 		return ICE::FC_HEV + Optimizer::raw * H.cwiseProduct(H);	
 	}
 	
@@ -122,7 +120,7 @@ vector<vector<float>> Optimizer::minimum_HEV(string method)
 	vector<float> A, B;
 
 	#pragma omp pararrel for
-	for(int ind=0; ind < v.rows(); ind++)
+	for(register int ind=0; ind < v.rows(); ind++)
 	{
 		Eigen::VectorXf row_vec = v.row(ind);
 		vector<float> row_std(row_vec.data(), row_vec.data() + row_vec.size());
@@ -248,7 +246,7 @@ void Optimizer::En_FC_rt(bool print)
 	Optimizer::En_FC_sum += Optimizer::En_FC_instant;
 	if (print) cout << "[Sum/instant] Engine FC : "<< 
 		Optimizer::En_FC_sum<<", "
-		<<Optimizer::En_FC_instant << endl<<endl;
+		<<Optimizer::En_FC_instant << endl;
 }
 
 void Optimizer::optimizer(string method)
@@ -262,7 +260,7 @@ void Optimizer::optimizer(string method)
 
 	if(method == "L")
 	{
-		for(int ind = 0; ind < Optimizer::max_iter; ind ++)
+		for(register int ind = 0; ind < Optimizer::max_iter; ind ++)
 		{
 			if( VehicleInfo::accel > 0 )
 			{
@@ -275,13 +273,13 @@ void Optimizer::optimizer(string method)
 			Optimizer::SOC_correction();
 			Optimizer::lambda += MG::Bat_Quantity * 3600 * Optimizer::correction;	
 		}
+		// Optimizer::lambda = -491;
 		Optimizer::SOC_correction(true);
 		return;
 	}
 	else
 	{
-		
-		for(int ind = 0; ind < Optimizer::max_iter; ind ++)
+		for(register int ind = 0; ind < Optimizer::max_iter; ind ++)
 		{
 			if( VehicleInfo::accel > 0 )
 			{
@@ -292,8 +290,8 @@ void Optimizer::optimizer(string method)
 				Optimizer::Regenerative_optimal("ADMM");
 			}
 			Optimizer::SOC_correction();
-			Optimizer::mu += Optimizer::correction;
-			Optimizer::raw *= 1.5;
+			Optimizer::mu += Optimizer::correction * 3600 * MG::Bat_Quantity;
+			Optimizer::raw *= 1.01;
 		}
 		Optimizer::SOC_correction(true);
 		return;
