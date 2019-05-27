@@ -38,14 +38,22 @@ void ECMS_performance::do_performance(Optimizer & obj_optimizer, string method, 
         obj_optimizer.En_FC_rt(false);
 
         // optimal mode
-        ECMS_performance::mode_per.push_back(int((std::get<0>(obj_optimizer.optimal_inform) == "EV" ? 0 : 1) )
-      + int((std::get<2>(obj_optimizer.optimal_inform) == -2 ? -1 : 0)));
+        ECMS_performance::mode_per.push_back(int((std::get<0>(obj_optimizer.optimal_inform) == "HEV" ? 2 : 1) )
+      + int((std::get<0>(obj_optimizer.optimal_inform) == "EV_Stop" ?  -1 : 0))
+      + int((std::get<0>(obj_optimizer.optimal_inform) == "EV_Regen" ?  -2 : 0)));
+
         // optimal gear
         ECMS_performance::gear_per.push_back(std::get<1>(obj_optimizer.optimal_inform));
         // optimal dsoc
         ECMS_performance::dSOC_per.push_back(obj_optimizer.correction); 
         // optimal mass
-        ECMS_performance::mass_per.push_back(obj_optimizer.En_FC_sum); 
+        ECMS_performance::mass_per.push_back(obj_optimizer.En_FC_sum);
+        // optimal lambda
+        ECMS_performance::lambda_per.push_back(obj_optimizer.lambda); 
+        // optimal mu
+        ECMS_performance::mu_per.push_back(obj_optimizer.mu); 
+        // optimal raw
+        ECMS_performance::raw_per.push_back(obj_optimizer.raw);
 	}
 	ros::Time end = ros::Time::now();
 
@@ -57,10 +65,10 @@ void ECMS_performance::do_performance(Optimizer & obj_optimizer, string method, 
 }
 
 
-void ECMS_performance::csvwrite()
+void ECMS_performance::csvwrite(string method)
 {
     ofstream myFile;
-    myFile.open("dSOC_per.csv");
+    myFile.open("src/ADVANCED_ECMS/output/dSOC_per.csv");
 
     for(register int ind = 0; ind < ECMS_performance::dSOC_per.size(); ind ++)
     {
@@ -69,7 +77,7 @@ void ECMS_performance::csvwrite()
     }
     
     myFile.close();
-    myFile.open("SOC_per.csv");
+    myFile.open("src/ADVANCED_ECMS/output/SOC_per.csv");
 
     for(register int ind = 0; ind < ECMS_performance::SOC_per.size(); ind ++)
     {
@@ -78,7 +86,7 @@ void ECMS_performance::csvwrite()
     }
 
     myFile.close();
-    myFile.open("gear_per.csv");
+    myFile.open("src/ADVANCED_ECMS/output/gear_per.csv");
 
     for(register int ind = 0; ind < ECMS_performance::gear_per.size(); ind ++)
     {
@@ -87,7 +95,7 @@ void ECMS_performance::csvwrite()
     }
 
     myFile.close();
-    myFile.open("mode_per.csv");
+    myFile.open("src/ADVANCED_ECMS/output/mode_per.csv");
 
     for(register int ind = 0; ind < ECMS_performance::mode_per.size(); ind ++)
     {
@@ -96,7 +104,7 @@ void ECMS_performance::csvwrite()
     }
 
     myFile.close();
-    myFile.open("mass_per.csv");
+    myFile.open("src/ADVANCED_ECMS/output/mass_per.csv");
 
     for(register int ind = 0; ind < ECMS_performance::mass_per.size(); ind ++)
     {
@@ -104,4 +112,40 @@ void ECMS_performance::csvwrite()
         ","<<ECMS_performance::mass_per[ind]<< endl;
     }
     myFile.close();
+
+
+    if(method == "L")
+    {
+        myFile.open("src/ADVANCED_ECMS/output/lambda_per.csv");
+
+        for(register int ind = 0; ind < ECMS_performance::lambda_per.size(); ind ++)
+        {
+            myFile << ind * VehicleInfo::time_rt <<
+            ","<<ECMS_performance::lambda_per[ind]<< endl;
+        }
+
+        myFile.close();
+    }
+    else
+    {
+        myFile.open("src/ADVANCED_ECMS/output/mu_per.csv");
+
+        for(register int ind = 0; ind < ECMS_performance::mu_per.size(); ind ++)
+        {
+            myFile << ind * VehicleInfo::time_rt <<
+            ","<<ECMS_performance::mu_per[ind]<< endl;
+        }
+
+        myFile.close();
+
+        myFile.open("src/ADVANCED_ECMS/output/raw_per.csv");
+
+        for(register int ind = 0; ind < ECMS_performance::raw_per.size(); ind ++)
+        {
+            myFile << ind * VehicleInfo::time_rt <<
+            ","<<ECMS_performance::raw_per[ind]<< endl;
+        }
+
+        myFile.close();
+    }
 }

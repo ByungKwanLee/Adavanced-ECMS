@@ -152,17 +152,22 @@ void Optimizer::Regenerative_optimal(string method)
 		minimum_EV  = Optimizer::minimum_EV("ADMM");
 	}
 
-
 	vector<float>::iterator  min_EV_Regen = std::min_element(minimum_EV.begin(), minimum_EV.end(), NaN_include<float>());
 	int min_EV_Regen_ind = min_EV_Regen - minimum_EV.begin();
 
 	assert( isnan(*min_EV_Regen) == 0 && "No cost and No soc, too much demand");
 
-
-	std::tuple<string, int, int, float> minimum_pair("EV",  
-		min_EV_Regen_ind + 1, -2, *min_EV_Regen);
-
-	Optimizer::optimal_inform = minimum_pair;
+	if(VehicleInfo::velocity == 0 && VehicleInfo::accel <=0)
+	{
+		std::tuple<string, int, int, float> minimum_pair("EV_Stop",  
+			1, -1, *min_EV_Regen);
+		Optimizer::optimal_inform = minimum_pair;
+	}
+	else{
+			std::tuple<string, int, int, float> minimum_pair("EV_Regen",  
+		min_EV_Regen_ind + 1, -1, *min_EV_Regen);
+		Optimizer::optimal_inform = minimum_pair;
+	}
 }
 
 void Optimizer::optimal_method(string method)
@@ -228,9 +233,10 @@ void Optimizer::optimal_method(string method)
 
 void Optimizer::SOC_correction(bool update)
 {
-	Optimizer::correction = std::get<0>(Optimizer::optimal_inform) == "EV" ? 
-	MG::dSOC_EV(std::get<1>(Optimizer::optimal_inform)-1) : 
-	MG::dSOC_HEV(std::get<1>(Optimizer::optimal_inform)-1, std::get<2>(Optimizer::optimal_inform));
+	Optimizer::correction = 
+	std::get<0>(Optimizer::optimal_inform) == "HEV" ? 
+	MG::dSOC_HEV(std::get<1>(Optimizer::optimal_inform)-1, std::get<2>(Optimizer::optimal_inform))
+	: MG::dSOC_EV(std::get<1>(Optimizer::optimal_inform)-1);
 
 	if(update) MG::SOC = MG::SOC + correction * VehicleInfo::time_rt;
 }
@@ -238,8 +244,8 @@ void Optimizer::SOC_correction(bool update)
 
 void Optimizer::En_FC_rt(bool print)
 {
-	Optimizer::En_FC_instant = std::get<0>(Optimizer::optimal_inform) == "EV" ? 0 : 
-	ICE::FC_HEV(std::get<1>(Optimizer::optimal_inform)-1, std::get<2>(Optimizer::optimal_inform));
+	Optimizer::En_FC_instant = std::get<0>(Optimizer::optimal_inform) == "HEV" ? 
+	ICE::FC_HEV(std::get<1>(Optimizer::optimal_inform)-1, std::get<2>(Optimizer::optimal_inform)) : 0;
 
 	assert(Optimizer::En_FC_instant >= 0 && "No En_FC should be positive");
 
@@ -273,7 +279,7 @@ void Optimizer::optimizer(string method)
 			Optimizer::SOC_correction();
 			Optimizer::lambda += MG::Bat_Quantity * 3600 * Optimizer::correction;	
 		}
-		// Optimizer::lambda = -491;
+		// Optimizer::lambda = -500;
 		Optimizer::SOC_correction(true);
 		return;
 	}
@@ -291,7 +297,8 @@ void Optimizer::optimizer(string method)
 			}
 			Optimizer::SOC_correction();
 			Optimizer::mu += Optimizer::correction * 3600 * MG::Bat_Quantity;
-			Optimizer::raw *= 1.01;
+			Optimizer::raw *= 1.001;
+
 		}
 		Optimizer::SOC_correction(true);
 		return;

@@ -36,14 +36,13 @@ void VehicleInfo::velocity_update(float accel, float time)
 	{
 		VehicleInfo::accel_rt = accel;
 		VehicleInfo::velocity_rt -= VehicleInfo::Frl()/VehicleInfo::mass * time;
-		if(VehicleInfo::velocity_rt < 0) {VehicleInfo::velocity_rt = VehicleInfo::accel_rt = 0;}
-
+		if(VehicleInfo::velocity_rt <= 0) {VehicleInfo::velocity_rt = VehicleInfo::accel_rt = 0;}
 	}
 	else 
 	{
 		VehicleInfo::accel_rt = accel;
 		VehicleInfo::velocity_rt += accel * time;
-		if(VehicleInfo::velocity_rt < 0) {VehicleInfo::velocity_rt = VehicleInfo::accel_rt = 0;}
+		if(VehicleInfo::velocity_rt <= 0) {VehicleInfo::velocity_rt = VehicleInfo::accel_rt = 0;}
 		if(VehicleInfo::velocity_rt >= 100 / 3.6) {VehicleInfo::velocity_rt = 100/3.6; VehicleInfo::accel_rt = 0;}
 	}
 }

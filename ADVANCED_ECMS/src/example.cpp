@@ -57,16 +57,15 @@ ros::Publisher pub_lambda = nh.advertise<std_msgs::Float32>("/lambda", 1);
 ros::Publisher pub_mu = nh.advertise<std_msgs::Float32>("/mu",1);
 ros::Publisher pub_raw = nh.advertise<std_msgs::Float32>("/raw",1);
 
-
 // MG::SOC = 0.6;
 // VehicleInfo::velocity =  100/3.6;
 // VehicleInfo::accel = -0.8;
 // Tool::ICEMG_parameter_update();
 
-Optimizer obj_optimizer(0,0,1,50);
+Optimizer obj_optimizer(0,0,1,10);
 ECMS_performance obj_per;
-obj_per.do_performance(obj_optimizer, "ADMM", 1);
-obj_per.csvwrite();
+obj_per.do_performance(obj_optimizer, "L", 1);
+obj_per.csvwrite("L");
 
 // real time processing part
 // float HZ = 20;
@@ -121,8 +120,9 @@ obj_per.csvwrite();
 
 // 	// publish mode
 // 	std_msgs::Int32 msg_mode; 
-// 	msg_mode.data = int((std::get<0>(obj_optimizer.optimal_inform) == "EV" ? 0 : 1) )
-// 		+ int((std::get<2>(obj_optimizer.optimal_inform) == -2 ? -1 : 0));
+// 	msg_mode.data = int((std::get<0>(obj_optimizer.optimal_inform) == "HEV" ? 2 : 1) )
+//       + int((std::get<0>(obj_optimizer.optimal_inform) == "EV_Stop" ?  -1 : 0))
+//       + int((std::get<0>(obj_optimizer.optimal_inform) == "EV_Regen" ?  -2 : 0));
 // 	pub_mode.publish(msg_mode);
 
 // 	// publish lambda

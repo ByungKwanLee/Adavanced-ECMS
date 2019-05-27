@@ -16,8 +16,11 @@ public:
     std::vector<float> gear_per;
     std::vector<float> mode_per;
     std::vector<float> mass_per;
+    std::vector<float> lambda_per;
+    std::vector<float> mu_per;
+    std::vector<float> raw_per;
 	void do_performance(Optimizer & obj_optimizer, string method, float time_rt);
-	void csvwrite();
+	void csvwrite(string method);
 
 	ECMS_performance();
 	static std::vector<float> velocity_cycle;

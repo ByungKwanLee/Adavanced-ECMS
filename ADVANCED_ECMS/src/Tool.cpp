@@ -12,8 +12,23 @@ const int Tool::NumGrid = 100;
 // ICEMG_update
 bool Tool::ICEMG_parameter_update()
 {
+
+	// stop
+	if(VehicleInfo::velocity == 0 && VehicleInfo::accel <= 0)
+	{
+		// Voc, Rint
+		Tool::Voc(); Tool::Rint();
+
+		// EV of P estimation
+		MG::P1elec_EV = Eigen::VectorXf::Zero(MG::P1elec_EV.size()); 
+		Tool::PbatD_EV(); Tool::dSOC_EV(); //after constraints
+
+		return true;
+	}
+
+
 	// regen
-	if(VehicleInfo::accel <= 0)
+	if(VehicleInfo::accel <= 0 )
 	{
 		// Voc, Rint
 		Tool::Voc(); Tool::Rint();
