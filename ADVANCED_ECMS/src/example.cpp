@@ -62,15 +62,100 @@ ros::Publisher pub_raw = nh.advertise<std_msgs::Float32>("/raw",1);
 // VehicleInfo::accel = -0.8;
 // Tool::ICEMG_parameter_update();
 
-Optimizer obj_optimizer(0,0,1,10);
-ECMS_performance obj_per;
-obj_per.do_performance(obj_optimizer, "L", 1);
-obj_per.csvwrite("L");
+
+
+// performance check by each method
+std::vector<float> lambda;
+std::vector<float> mu;
+std::vector<float> raw;
+std::vector<float> SOC_constraint;
+std::vector<float> Fuel_Consumption;
+string method = "ADMM";
+
+for (register int ind = 1; ind < 8 ; ind ++)
+{
+	
+	Optimizer  obj_optimizer(0,0,ind);
+	ECMS_performance obj_per(0.6);
+	obj_per.do_performance(obj_optimizer, method, 1);
+
+	mu.push_back(obj_optimizer.mu);
+	raw.push_back(obj_optimizer.raw);
+	SOC_constraint.push_back(abs(MG::SOC - 0.6));
+	Fuel_Consumption.push_back(obj_optimizer.En_FC_sum);
+	// obj_per.csvwrite(method);
+}
+
+
+// for (register int ind = 1; ind < 20 +1 ; ind ++)
+// {
+// 	Optimizer obj_optimizer(0,0,ind);
+// 	ECMS_performance obj_per(0.6);
+// 	obj_per.do_performance(obj_optimizer, method, 1);
+
+// 	lambda.push_back(obj_optimizer.lambda);
+// 	SOC_constraint.push_back(abs(MG::SOC - 0.6));
+// 	Fuel_Consumption.push_back(obj_optimizer.En_FC_sum);
+// }
+
+
+ofstream myFile;
+if (method == "L")
+{
+	myFile.open("src/ADVANCED_ECMS/output/iter/lambda.csv");
+	for(register int ind = 0; ind < lambda.size(); ind ++)
+	{
+	    myFile << ind * VehicleInfo::time_rt <<
+	    ","<<lambda[ind]<< endl;
+	}
+	myFile.close();	
+}
+else
+{
+	myFile.open("src/ADVANCED_ECMS/output/iter/mu.csv");
+	for(register int ind = 0; ind < mu.size(); ind ++)
+	{
+	    myFile << ind * VehicleInfo::time_rt <<
+	    ","<<mu[ind]<< endl;
+	}
+	myFile.close();
+	myFile.open("src/ADVANCED_ECMS/output/iter/raw.csv");
+	for(register int ind = 0; ind < raw.size(); ind ++)
+	{
+	    myFile << ind * VehicleInfo::time_rt <<
+	    ","<<raw[ind]<< endl;
+	}
+	myFile.close();
+
+
+}
+
+myFile.open("src/ADVANCED_ECMS/output/iter/SOC_constraint.csv");
+
+for(register int ind = 0; ind < SOC_constraint.size(); ind ++)
+{
+    myFile << ind * VehicleInfo::time_rt <<
+    ","<<SOC_constraint[ind]<< endl;
+}
+
+myFile.close();
+myFile.open("src/ADVANCED_ECMS/output/iter/Fuel_Consumption.csv");
+
+for(register int ind = 0; ind < Fuel_Consumption.size(); ind ++)
+{
+    myFile << ind * VehicleInfo::time_rt <<
+    ","<<Fuel_Consumption[ind]<< endl;
+}
+myFile.close();
+
+
+
 
 // real time processing part
 // float HZ = 20;
 // VehicleInfo::time_rt = 1./HZ;
 // ros::Rate rate(HZ); // HZ
+// Optimizer obj_optimizer(0,0,1,10);
 // while(ros::ok())
 // {	
 // 	ros::Time start = ros::Time::now();
@@ -115,7 +200,8 @@ obj_per.csvwrite("L");
 
 // 	// publish gear
 // 	std_msgs::Int32 msg_gear; 
-// 	msg_gear.data = std::get<1>(obj_optimizer.optimal_inform);
+// 	msg_gear.data = std::get<0>(obj_optimizer.optimal_inform)=="EV_Stop" ?
+// 			0 : std::get<1>(obj_optimizer.optimal_inform);
 // 	pub_gear.publish(msg_gear);
 
 // 	// publish mode
@@ -143,18 +229,5 @@ obj_per.csvwrite("L");
 // 	// sleep thread
 // 	rate.sleep();
 // }
-
-
-
-
-// Processing time
-// cout << "Optimal Mode : " <<std::get<0>(obj_optimizer.optimal_inform)
-// << ", Optimal gear : " << std::get<1>(obj_optimizer.optimal_inform)
-// << ", grid number : " <<std::get<2>(obj_optimizer.optimal_inform)
-// <<", cost : " <<std::get<3>(obj_optimizer.optimal_inform)
-// <<", SOC : "<<MG::SOC
-// <<", velocity[km/h] : " <<VehicleInfo::velocity*3.6
-// <<", accel[m/s2] : " << VehicleInfo::accel
-// <<endl<<endl;
 
 }

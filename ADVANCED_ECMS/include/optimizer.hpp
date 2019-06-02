@@ -26,7 +26,7 @@ public:
 	float correction;
 	std::tuple<string, int, int, float> optimal_inform;
 	
-	Optimizer(float lambda, float mu, float raw, float max_iter);
+	Optimizer(float lambda, float mu, float max_iter);
 	Eigen::MatrixXf Lagrangian_Costmodeling(string mode);
 	Eigen::MatrixXf ADMM_Costmodeling(string mode);
 	vector<float> minimum_EV(string method);

@@ -9,13 +9,17 @@ using namespace std;
 std::vector<float> ECMS_performance::velocity_cycle = data_loader::get_1d_data("src/ADVANCED_ECMS/data/velocity_cycle");
 std::vector<float> ECMS_performance::accel_cycle    = data_loader::get_1d_data("src/ADVANCED_ECMS/data/accel_cycle");
 
-ECMS_performance::ECMS_performance(){}
+ECMS_performance::ECMS_performance(float SOC)
+{
+
+    ECMS_performance::SOC_init = SOC;
+}
 
 void ECMS_performance::do_performance(Optimizer & obj_optimizer, string method, float time)
 {
 	ros::Time start = ros::Time::now();
 	VehicleInfo::time_rt = time;
-	float soc_t0 = MG::SOC;
+	MG::SOC = ECMS_performance::SOC_init;
 
 	#pragma omp pararrel for
 	for (register int ind=0; ind < accel_cycle.size(); ind++)
@@ -42,8 +46,37 @@ void ECMS_performance::do_performance(Optimizer & obj_optimizer, string method, 
       + int((std::get<0>(obj_optimizer.optimal_inform) == "EV_Stop" ?  -1 : 0))
       + int((std::get<0>(obj_optimizer.optimal_inform) == "EV_Regen" ?  -2 : 0)));
 
+        // optimal Ti
+        ECMS_performance::Ti.push_back( std::get<0>(obj_optimizer.optimal_inform) == "HEV" ?
+           ICE::Ti_HEV( std::get<1>(obj_optimizer.optimal_inform)-1, std::get<2>(obj_optimizer.optimal_inform) ): 0);
+
+        // optimal Wi
+        ECMS_performance::Wi.push_back(std::get<0>(obj_optimizer.optimal_inform) == "HEV" ?
+           ICE::Wi_HEV( std::get<1>(obj_optimizer.optimal_inform)-1) : 0);
+
+        if(std::get<0>(obj_optimizer.optimal_inform)=="EV_Stop")
+
+        {
+            ECMS_performance::T1.push_back(0);
+            ECMS_performance::W1.push_back(0);
+        }
+        else
+        {
+            // optimal T1
+            ECMS_performance::T1.push_back(std::get<0>(obj_optimizer.optimal_inform) == "HEV" ?
+                MG::T1_HEV(std::get<1>(obj_optimizer.optimal_inform)-1, std::get<2>(obj_optimizer.optimal_inform))
+                : MG::T1_EV_constr(std::get<1>(obj_optimizer.optimal_inform)-1));
+
+            // optimal W1
+            ECMS_performance::W1.push_back(std::get<0>(obj_optimizer.optimal_inform) == "HEV" ?
+                MG::W1_HEV(std::get<1>(obj_optimizer.optimal_inform)-1, std::get<2>(obj_optimizer.optimal_inform))
+                : MG::W1_EV_constr(std::get<1>(obj_optimizer.optimal_inform)-1));
+        }
+
+        
         // optimal gear
-        ECMS_performance::gear_per.push_back(std::get<1>(obj_optimizer.optimal_inform));
+        ECMS_performance::gear_per.push_back(std::get<0>(obj_optimizer.optimal_inform)=="EV_Stop" ?
+            0 : std::get<1>(obj_optimizer.optimal_inform));
         // optimal dsoc
         ECMS_performance::dSOC_per.push_back(obj_optimizer.correction); 
         // optimal mass
@@ -57,11 +90,11 @@ void ECMS_performance::do_performance(Optimizer & obj_optimizer, string method, 
 	}
 	ros::Time end = ros::Time::now();
 
-	assert( abs(MG::SOC-soc_t0) <= pow(10, -2) && "Caution : SOC constraints is not zero!");
+	// assert( abs(MG::SOC-soc_t0) <= pow(10, -1) && "Caution : SOC constraints is not zero!");
 
     // print
     obj_optimizer.En_FC_rt(true);
-	cout << "Processing Time : " << (end - start).toSec() <<",  dSOC (soc tf - soc t0): " << MG::SOC-soc_t0 << endl;
+	cout << "Processing Time : " << (end - start).toSec() <<",  dSOC (soc tf - soc t0): " << MG::SOC-ECMS_performance::SOC_init << endl;
 }
 
 
@@ -110,6 +143,38 @@ void ECMS_performance::csvwrite(string method)
     {
         myFile << ind * VehicleInfo::time_rt <<
         ","<<ECMS_performance::mass_per[ind]<< endl;
+    }
+    myFile.close();
+    myFile.open("src/ADVANCED_ECMS/output/Ti_per.csv");
+
+    for(register int ind = 0; ind < ECMS_performance::mass_per.size(); ind ++)
+    {
+        myFile << ind * VehicleInfo::time_rt <<
+        ","<<ECMS_performance::Ti[ind]<< endl;
+    }
+    myFile.close();
+    myFile.open("src/ADVANCED_ECMS/output/Wi_per.csv");
+
+    for(register int ind = 0; ind < ECMS_performance::mass_per.size(); ind ++)
+    {
+        myFile << ind * VehicleInfo::time_rt <<
+        ","<<ECMS_performance::Wi[ind]<< endl;
+    }
+    myFile.close();
+    myFile.open("src/ADVANCED_ECMS/output/T1_per.csv");
+
+    for(register int ind = 0; ind < ECMS_performance::mass_per.size(); ind ++)
+    {
+        myFile << ind * VehicleInfo::time_rt <<
+        ","<<ECMS_performance::T1[ind]<< endl;
+    }
+    myFile.close();
+    myFile.open("src/ADVANCED_ECMS/output/W1_per.csv");
+
+    for(register int ind = 0; ind < ECMS_performance::mass_per.size(); ind ++)
+    {
+        myFile << ind * VehicleInfo::time_rt <<
+        ","<<ECMS_performance::W1[ind]<< endl;
     }
     myFile.close();
 

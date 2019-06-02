@@ -39,11 +39,10 @@ struct min_by_value
 };
 
 
-Optimizer::Optimizer(float lambda, float mu, float raw, float max_iter)
+Optimizer::Optimizer(float lambda, float mu, float max_iter)
 {
 	Optimizer::lambda_init = lambda;
 	Optimizer::mu_init = mu;
-	Optimizer::raw_init = raw;
 	Optimizer::max_iter = max_iter;
 	Optimizer::En_FC_instant = Optimizer::En_FC_sum = 0;
 }
@@ -70,12 +69,12 @@ Eigen::MatrixXf Optimizer::ADMM_Costmodeling(string mode)
 
 	if (mode == "EV" )
 	{
-		Eigen::VectorXf H = 3600 * MG::Bat_Quantity * MG::dSOC_EV + Optimizer::mu * Eigen::VectorXf::Ones(MG::dSOC_EV.size());
+		Eigen::VectorXf H = MG::dSOC_EV + Optimizer::mu * Eigen::VectorXf::Ones(MG::dSOC_EV.size());
 		return Optimizer::raw * H.cwiseProduct(H);
 	}
 	else
 	{
-		Eigen::MatrixXf H = 3600 * MG::Bat_Quantity * MG::dSOC_HEV + Optimizer::mu * Eigen::MatrixXf::Ones(MG::dSOC_HEV.rows(), MG::dSOC_HEV.cols());
+		Eigen::MatrixXf H =  MG::dSOC_HEV + Optimizer::mu * Eigen::MatrixXf::Ones(MG::dSOC_HEV.rows(), MG::dSOC_HEV.cols());
 		return ICE::FC_HEV + Optimizer::raw * H.cwiseProduct(H);	
 	}
 	
@@ -262,7 +261,7 @@ void Optimizer::optimizer(string method)
 
 	Optimizer::lambda = Optimizer::lambda_init;
 	Optimizer::mu = Optimizer::mu_init;
-	Optimizer::raw = Optimizer::raw_init;
+	Optimizer::raw = 3600 * MG::Bat_Quantity;
 
 	if(method == "L")
 	{
@@ -279,7 +278,6 @@ void Optimizer::optimizer(string method)
 			Optimizer::SOC_correction();
 			Optimizer::lambda += MG::Bat_Quantity * 3600 * Optimizer::correction;	
 		}
-		// Optimizer::lambda = -500;
 		Optimizer::SOC_correction(true);
 		return;
 	}
@@ -296,8 +294,8 @@ void Optimizer::optimizer(string method)
 				Optimizer::Regenerative_optimal("ADMM");
 			}
 			Optimizer::SOC_correction();
-			Optimizer::mu += Optimizer::correction * 3600 * MG::Bat_Quantity;
-			Optimizer::raw *= 1.001;
+			Optimizer::mu += Optimizer::correction;
+			Optimizer::raw = 3600 * MG::Bat_Quantity;
 
 		}
 		Optimizer::SOC_correction(true);
