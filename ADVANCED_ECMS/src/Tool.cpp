@@ -28,7 +28,7 @@ bool Tool::ICEMG_parameter_update()
 
 
 	// regen
-	if(VehicleInfo::accel <= 0 )
+	if(VehicleInfo::P_d() <= 0 )
 	{
 		// Voc, Rint
 		Tool::Voc(); Tool::Rint();

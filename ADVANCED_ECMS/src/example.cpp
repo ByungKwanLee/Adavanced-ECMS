@@ -65,16 +65,16 @@ ros::Publisher pub_raw = nh.advertise<std_msgs::Float32>("/raw",1);
 
 
 // finding parameter for performance check by each method
-// std::vector<float> lambda;
-// std::vector<float> mu;
-// std::vector<float> raw;
-// std::vector<float> SOC_constraint;
-// std::vector<float> Fuel_Consumption;
-// string method = "ADMM";
+std::vector<float> lambda;
+std::vector<float> mu;
+std::vector<float> raw;
+std::vector<float> SOC_constraint;
+std::vector<float> Fuel_Consumption;
 
-// for (register int ind = 1; ind < 8 ; ind ++)
-// {
-	
+
+// string method = "ADMM";
+// for (register int ind = 1; ind < 10 + 1; ind ++)
+// {	
 // 	Optimizer  obj_optimizer(0,0,ind);
 // 	ECMS_performance obj_per(0.6);
 // 	obj_per.do_performance(obj_optimizer, method, 1);
@@ -87,7 +87,8 @@ ros::Publisher pub_raw = nh.advertise<std_msgs::Float32>("/raw",1);
 // }
 
 
-// for (register int ind = 1; ind < 20 +1 ; ind ++)
+// string method = "L";
+// for (register int ind = 1; ind < 15 ; ind ++)
 // {
 // 	Optimizer obj_optimizer(0,0,ind);
 // 	ECMS_performance obj_per(0.6);
@@ -98,6 +99,14 @@ ros::Publisher pub_raw = nh.advertise<std_msgs::Float32>("/raw",1);
 // 	Fuel_Consumption.push_back(obj_optimizer.En_FC_sum);
 // }
 
+
+
+
+
+
+
+
+// // csv file save
 // ofstream myFile;
 // if (method == "L")
 // {
@@ -148,9 +157,18 @@ ros::Publisher pub_raw = nh.advertise<std_msgs::Float32>("/raw",1);
 // myFile.close();
 
 
+
+
+
+
+
+
+
+
+
 // performance check by each method after finding parameter
-string method = "L";
-Optimizer  obj_optimizer(0,0,20);
+string method = "ADMM";
+Optimizer  obj_optimizer(0,0,10);
 ECMS_performance obj_per(0.6);
 obj_per.do_performance(obj_optimizer, method, 1);
 obj_per.csvwrite(method);

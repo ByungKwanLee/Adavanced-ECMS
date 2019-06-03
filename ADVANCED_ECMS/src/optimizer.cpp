@@ -70,12 +70,12 @@ Eigen::MatrixXf Optimizer::ADMM_Costmodeling(string mode)
 	if (mode == "EV" )
 	{
 		Eigen::VectorXf H = MG::dSOC_EV + Optimizer::mu * Eigen::VectorXf::Ones(MG::dSOC_EV.size());
-		return Optimizer::raw * H.cwiseProduct(H);
+		return Optimizer::raw / 2 * H.cwiseProduct(H);
 	}
 	else
 	{
 		Eigen::MatrixXf H =  MG::dSOC_HEV + Optimizer::mu * Eigen::MatrixXf::Ones(MG::dSOC_HEV.rows(), MG::dSOC_HEV.cols());
-		return ICE::FC_HEV + Optimizer::raw * H.cwiseProduct(H);	
+		return ICE::FC_HEV + Optimizer::raw / 2 * H.cwiseProduct(H);	
 	}
 	
 }
@@ -237,7 +237,7 @@ void Optimizer::SOC_correction(bool update)
 	MG::dSOC_HEV(std::get<1>(Optimizer::optimal_inform)-1, std::get<2>(Optimizer::optimal_inform))
 	: MG::dSOC_EV(std::get<1>(Optimizer::optimal_inform)-1);
 
-	if(update) MG::SOC = MG::SOC + correction * VehicleInfo::time_rt;
+	if(update) MG::SOC = MG::SOC + Optimizer::correction * VehicleInfo::time_rt;
 }
 
 
@@ -261,13 +261,21 @@ void Optimizer::optimizer(string method)
 
 	Optimizer::lambda = Optimizer::lambda_init;
 	Optimizer::mu = Optimizer::mu_init;
-	Optimizer::raw = 3600 * MG::Bat_Quantity;
+	Optimizer::raw = 3600*MG::Bat_Quantity;
+	
+	float min_dSOC = 10;
+	float pre_dSOC=-1;
+	float min_cost = pow(50,100);
+	float min_lambda;
+	float min_mu;
+	float min_raw;
+	std::tuple<string, int, int, float> minimum_pair;
 
 	if(method == "L")
 	{
 		for(register int ind = 0; ind < Optimizer::max_iter; ind ++)
 		{
-			if( VehicleInfo::accel > 0 )
+			if( VehicleInfo::P_d() > 0 )
 			{
 				Optimizer::optimal_method("L");
 			}
@@ -276,7 +284,8 @@ void Optimizer::optimizer(string method)
 				Optimizer::Regenerative_optimal("L");
 			}
 			Optimizer::SOC_correction();
-			Optimizer::lambda += MG::Bat_Quantity * 3600 * Optimizer::correction;	
+			Optimizer::lambda += MG::Bat_Quantity * 3600 * Optimizer::correction;
+			
 		}
 		Optimizer::SOC_correction(true);
 		return;
@@ -285,7 +294,7 @@ void Optimizer::optimizer(string method)
 	{
 		for(register int ind = 0; ind < Optimizer::max_iter; ind ++)
 		{
-			if( VehicleInfo::accel > 0 )
+			if( VehicleInfo::P_d() > 0 )
 			{
 				Optimizer::optimal_method("ADMM");
 			}
@@ -293,11 +302,30 @@ void Optimizer::optimizer(string method)
 			{
 				Optimizer::Regenerative_optimal("ADMM");
 			}
+			
 			Optimizer::SOC_correction();
-			Optimizer::mu += Optimizer::correction;
-			Optimizer::raw = 3600 * MG::Bat_Quantity;
 
+			float now_dSOC = Optimizer::correction;
+			// if(abs(min_dSOC) > abs(now_dSOC) || now_dSOC < 0)
+			// {
+			// 	min_dSOC = now_dSOC;
+			// 	minimum_pair = Optimizer::optimal_inform;
+			// 	min_mu = Optimizer::mu;
+			// 	min_raw = Optimizer::raw;
+			// }
+
+			Optimizer::mu += pre_dSOC==-1 ? now_dSOC : 
+			(pre_dSOC + now_dSOC)/2;
+
+			// Optimizer::raw = 3600*pow(1.01, ind+1)*MG::Bat_Quantity;
+			Optimizer::raw += 1/8*pow( pre_dSOC==-1 ? now_dSOC :
+			(pre_dSOC + now_dSOC)/2 + 2*Optimizer::mu, 2);
+
+			pre_dSOC = now_dSOC;
 		}
+		// Optimizer::optimal_inform = minimum_pair;
+		// Optimizer::mu = min_mu;
+		// Optimizer::raw=min_raw;
 		Optimizer::SOC_correction(true);
 		return;
 		

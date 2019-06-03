@@ -35,6 +35,8 @@ void ECMS_performance::do_performance(Optimizer & obj_optimizer, string method, 
 			num += 1;
 		}
 
+        if(num>=2) cout << "NUM!!" << endl;
+
         // current soc
         ECMS_performance::SOC_per.push_back(MG::SOC); 
 
@@ -69,7 +71,7 @@ void ECMS_performance::do_performance(Optimizer & obj_optimizer, string method, 
 
             // optimal W1
             ECMS_performance::W1.push_back(std::get<0>(obj_optimizer.optimal_inform) == "HEV" ?
-                MG::W1_HEV(std::get<1>(obj_optimizer.optimal_inform)-1, std::get<2>(obj_optimizer.optimal_inform))
+                ICE::Wi_HEV(std::get<1>(obj_optimizer.optimal_inform)-1)
                 : MG::W1_EV_constr(std::get<1>(obj_optimizer.optimal_inform)-1));
         }
 
@@ -94,7 +96,7 @@ void ECMS_performance::do_performance(Optimizer & obj_optimizer, string method, 
 
     // print
     obj_optimizer.En_FC_rt(true);
-	cout << "Processing Time : " << (end - start).toSec() <<",  dSOC (soc tf - soc t0): " << MG::SOC-ECMS_performance::SOC_init << endl;
+	cout <<"Processing Time : " << (end - start).toSec() <<",  dSOC (soc tf - soc t0): " << SOC_per[accel_cycle.size()-1]-ECMS_performance::SOC_init << endl;
 }
 
 
