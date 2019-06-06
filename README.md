@@ -9,7 +9,7 @@
 
 ## Topic Message
 - publisher   : **`/geometry_msgs/Twist.msg`**<br />
-- subscriber  : **`std_msgs/Float32.msg`**<br />, **`std_msgs/Int32.msg`**<br />
+- subscriber  : **`std_msgs/Float32.msg, std_msgs/Int32.msg`**<br />
 
 ## Topic name of system variable
 - accel          : **`/joy_teleop/cmd_vel`**<br /> (Twist.msg) --(ROS APP joystick)
