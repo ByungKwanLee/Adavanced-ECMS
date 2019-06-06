@@ -28,7 +28,7 @@
 - [2-Example] ecms/ECMS_mode = "performance" or "realtime"
 - [2-Example] ecms/method = "L" or "ADMM"
 - [2-Example] ecms/iter is maximum iteration number
-- [3] **`rosparam load ecms.yaml && cd ../../../ && rosrun ecms ecms`**<br />, In terminal
+- [3] **`rosparam load ecms.yaml && cd ../../../ && rosrun ecms ecms`**, In terminal
 - [4] If you want to change specification of Engine, Motor and, Battery, then you must change files in data folder, and edit in src/ICEMG.cpp
 - [5] If you want to change driving cycle, then you must change files in data folder, and edit in src/performance.cpp
 - [6] After performance ECMS_mode, driving cycle information csv files are saved in output folder. And, in iter folder inside output folder, driving cycle information when changing iteration from 1 to ecms/iter
