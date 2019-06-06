@@ -11,8 +11,6 @@
 - publisher   : geometry_msgs/Twist.msg
 - subscriber  : std_msgs/Float32.msg, std_msgs/Int32.msg
 
-**`camera_lidar:`**<br />
-
 ### Topic name of system variable
 - accel          : **`/joy_teleop/cmd_vel`**<br /> (Twist.msg) --(ROS APP joystick)
 - velocity       : **`/velocity`**<br />           (Float32.msg)
