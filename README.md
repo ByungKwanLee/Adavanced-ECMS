@@ -1,19 +1,19 @@
 # ADVANCED_ECMS (Real-Time processing by ROS)
-** Author  : `ByungKwan Lee` (leebk@kaist.ac.kr)    M.S. Candidate**
-** Support : `KyungJae Nam`  (tuta4048@kaist.ac.kr) M.S. Candidate**
-** Advisor : `DongSuk Kum`   (dskum@kaist.ac.kr)    Professor**
+**Author  : `ByungKwan Lee` (leebk@kaist.ac.kr)    M.S. Candidate**
+**Support : `KyungJae Nam`  (tuta4048@kaist.ac.kr) M.S. Candidate**
+**Advisor : `DongSuk Kum`   (dskum@kaist.ac.kr)    Professor**
 
-## Requirements
+### Requirements
 - ROS kinetic version
 - C++14
 
-## Topic Message
+### Topic Message
 - publisher   : geometry_msgs/Twist.msg
 - subscriber  : std_msgs/Float32.msg, std_msgs/Int32.msg
 
 **`camera_lidar:`**<br />
 
-## Topic name of system variable
+### Topic name of system variable
 - accel          : **`/joy_teleop/cmd_vel`**<br /> (Twist.msg) --(ROS APP joystick)
 - velocity       : **`/velocity`**<br />           (Float32.msg)
 - soc            : **`/soc`**<br />                (Float32.msg)
@@ -24,7 +24,7 @@
 - mu             : **`/mu`**<br />                 (Float32.msg)
 - rho            : **`/rho`**<br />                (Float32.msg)
 
-## Method
+### Method
 - Iterative Lagrangian method
 - Alternating Direction Method of Multipliers
 
