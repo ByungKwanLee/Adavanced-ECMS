@@ -3,9 +3,7 @@
 #include <data_loader.hpp>
 #include <VehicleInfo.hpp>
 
-
 using namespace std;
-
 
 // ICE configuration
 vector<float> ICE::TM_Ratio{4.212, 2.637, 1.8, 1.386, 1, 0.772 };
