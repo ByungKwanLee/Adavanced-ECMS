@@ -1,8 +1,8 @@
 #include <VehicleInfo.hpp>
-
+#include <math.h>
 
 using namespace std;
-using namespace LBK;
+
 
 float VehicleInfo::velocity = 0; // [60km/h -> m/s]
 float VehicleInfo::accel = 0; // [m/s^2]
@@ -32,7 +32,7 @@ float VehicleInfo::P_d()
 
 void VehicleInfo::velocity_update(float accel, float time)
 {
-	if(accel == 0)
+	if(abs(accel) <= pow(10,-2))
 	{
 		VehicleInfo::accel_rt = accel;
 		VehicleInfo::velocity_rt -= VehicleInfo::Frl()/VehicleInfo::mass * time;

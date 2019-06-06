@@ -3,8 +3,7 @@
 
 using namespace std;
 
-namespace LBK
-{
+
 
 class data_loader
 {
@@ -14,5 +13,3 @@ public:
 
 };
 
-
-}

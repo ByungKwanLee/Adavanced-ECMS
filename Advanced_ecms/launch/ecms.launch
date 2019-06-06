@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <rosparam command="load" file="$(find ecms)/cfg/ecms.yaml"/>
+  <node name="ecms" type="ecms" pkg="ecms" output='screen'> </node>
+</launch>
+

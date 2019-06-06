@@ -4,8 +4,7 @@
 #include <optimizer.hpp>
 #include <ros/ros.h>
 
-namespace LBK
-{
+
 
 class ECMS_performance
 {
@@ -40,4 +39,3 @@ public:
 
 };
 
-}

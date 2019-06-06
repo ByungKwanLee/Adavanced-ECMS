@@ -11,8 +11,7 @@
 using namespace std;
 
 
-namespace LBK
-{
+
 
 
 class Optimizer
@@ -51,5 +50,5 @@ public:
 
 
 
-}
+
 

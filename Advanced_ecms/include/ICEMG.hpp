@@ -5,8 +5,7 @@
 
 using namespace std;
 
-namespace LBK
-{
+
 
 class ICE
 {
@@ -146,6 +145,3 @@ public :
 	
 	
 };
-
-
-}

@@ -3,7 +3,6 @@
 #include <VehicleInfo.hpp>
 
 using namespace std;
-using namespace LBK;
 
 template <typename T>
 struct NaN_include
@@ -261,10 +260,11 @@ void Optimizer::optimizer(string method)
 
 	Optimizer::lambda = Optimizer::lambda_init;
 	Optimizer::mu = Optimizer::mu_init;
-	Optimizer::raw = 3600*MG::Bat_Quantity;
+	Optimizer::raw = MG::Bat_Quantity*3600;
 	
 	float min_dSOC = 10;
-	float pre_dSOC=-1;
+	float pre_dSOC=10;
+	bool activate = false;
 	float min_cost = pow(50,100);
 	float min_lambda;
 	float min_mu;
@@ -306,26 +306,32 @@ void Optimizer::optimizer(string method)
 			Optimizer::SOC_correction();
 
 			float now_dSOC = Optimizer::correction;
-			// if(abs(min_dSOC) > abs(now_dSOC) || now_dSOC < 0)
-			// {
-			// 	min_dSOC = now_dSOC;
-			// 	minimum_pair = Optimizer::optimal_inform;
-			// 	min_mu = Optimizer::mu;
-			// 	min_raw = Optimizer::raw;
-			// }
 
-			Optimizer::mu += pre_dSOC==-1 ? now_dSOC : 
-			(pre_dSOC + now_dSOC)/2;
+			if( abs(now_dSOC) < abs(pre_dSOC) || now_dSOC < 0)
+			{
+				pre_dSOC = now_dSOC;
+				minimum_pair = Optimizer::optimal_inform;
+				min_mu = Optimizer::mu;
+				min_raw = Optimizer::raw;
+				activate = true;
+			}
 
-			// Optimizer::raw = 3600*pow(1.01, ind+1)*MG::Bat_Quantity;
-			Optimizer::raw += 1/8*pow( pre_dSOC==-1 ? now_dSOC :
-			(pre_dSOC + now_dSOC)/2 + 2*Optimizer::mu, 2);
+			Optimizer::mu += abs(now_dSOC) > abs(pre_dSOC) ? pre_dSOC : now_dSOC;
+
+			Optimizer::raw = 3600*pow(1.01, ind+1)*MG::Bat_Quantity;
 
 			pre_dSOC = now_dSOC;
+
+			if(ind ==  Optimizer::max_iter-1 && !activate)
+			{
+				minimum_pair = Optimizer::optimal_inform;
+				min_mu = Optimizer::mu;
+				min_raw = Optimizer::raw;
+			}
 		}
-		// Optimizer::optimal_inform = minimum_pair;
-		// Optimizer::mu = min_mu;
-		// Optimizer::raw=min_raw;
+		Optimizer::optimal_inform = minimum_pair;
+		Optimizer::mu = min_mu;
+		Optimizer::raw=min_raw;
 		Optimizer::SOC_correction(true);
 		return;
 		

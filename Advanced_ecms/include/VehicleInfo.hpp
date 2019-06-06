@@ -4,8 +4,7 @@
 
 using namespace std;
 
-namespace LBK
-{
+
 
 class VehicleInfo
 {
@@ -31,5 +30,3 @@ public:
 
 };
 
-
-};

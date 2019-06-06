@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <data_loader.hpp>
 
-using namespace LBK;
 using namespace std;
 
 vector<float> data_loader::get_1d_data(string file_name, bool print)

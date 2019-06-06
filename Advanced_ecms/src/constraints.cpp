@@ -2,7 +2,7 @@
 #include <interp_tool.hpp>
 
 using namespace std;
-using namespace LBK;
+
 
 float Tool::Wi_HEV_min() {return *std::min_element(ICE::En_mapRPM.begin(), ICE::En_mapRPM.end());}
 float Tool::Wi_HEV_max() {return *std::max_element(ICE::En_mapRPM.begin(), ICE::En_mapRPM.end());}

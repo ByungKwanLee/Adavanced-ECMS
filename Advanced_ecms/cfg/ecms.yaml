@@ -1,0 +1,4 @@
+ecms:
+  ECMS_mode : "realtime" # only two mode "performance" or "realtime"
+  method    : "ADMM"        # only two mode "L" or "ADMM"
+  iter      : 10            # optimization max iteration number 

@@ -1,7 +1,7 @@
 #include <interp_tool.hpp>
 
 using namespace std;
-using namespace LBK;
+
 
 float interp_Tool::interpolate_1d(vector<float> & xData, vector<float> & yData, 
 	float x, bool extrapolation)

@@ -4,7 +4,7 @@
 // #include <omp.h>
 
 using namespace std;
-using namespace LBK;
+
 
 // setting constant value of Tool NumGrid
 const int Tool::NumGrid = 100;

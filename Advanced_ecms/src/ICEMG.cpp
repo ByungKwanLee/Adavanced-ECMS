@@ -5,7 +5,7 @@
 
 
 using namespace std;
-using namespace LBK;
+
 
 // ICE configuration
 vector<float> ICE::TM_Ratio{4.212, 2.637, 1.8, 1.386, 1, 0.772 };
@@ -15,14 +15,14 @@ float ICE::TM_Eff = 0.9;
 float ICE::FD_EFF = 0.97;
 float ICE::FD_Ratio = 4.11;
 
-vector<float> ICE::En_minRPM = Tool::rpm2rs(data_loader::get_1d_data("src/ADVANCED_ECMS/data/En_minRPM"));
-vector<float> ICE::En_minTrq = data_loader::get_1d_data("src/ADVANCED_ECMS/data/En_minTrq");
-vector<float> ICE::En_maxRPM = Tool::rpm2rs(data_loader::get_1d_data("src/ADVANCED_ECMS/data/En_maxRPM"));
-vector<float> ICE::En_maxTrq = data_loader::get_1d_data("src/ADVANCED_ECMS/data/En_maxTrq");
-vector<float> ICE::En_mapRPM = Tool::rpm2rs(data_loader::get_1d_data("src/ADVANCED_ECMS/data/En_mapRPM")); //to be added
-vector<float> ICE::En_mapTrq = data_loader::get_1d_data("src/ADVANCED_ECMS/data/En_mapTrq");
-vector<vector<float>> ICE::En_mapData = data_loader::get_2d_data("src/ADVANCED_ECMS/data/En_mapData");
-vector<vector<float>> ICE::En_FC = data_loader::get_2d_data("src/ADVANCED_ECMS/data/En_FC");
+vector<float> ICE::En_minRPM = Tool::rpm2rs(data_loader::get_1d_data("src/advanced_ecms/data/En_minRPM"));
+vector<float> ICE::En_minTrq = data_loader::get_1d_data("src/advanced_ecms/data/En_minTrq");
+vector<float> ICE::En_maxRPM = Tool::rpm2rs(data_loader::get_1d_data("src/advanced_ecms/data/En_maxRPM"));
+vector<float> ICE::En_maxTrq = data_loader::get_1d_data("src/advanced_ecms/data/En_maxTrq");
+vector<float> ICE::En_mapRPM = Tool::rpm2rs(data_loader::get_1d_data("src/advanced_ecms/data/En_mapRPM")); //to be added
+vector<float> ICE::En_mapTrq = data_loader::get_1d_data("src/advanced_ecms/data/En_mapTrq");
+vector<vector<float>> ICE::En_mapData = data_loader::get_2d_data("src/advanced_ecms/data/En_mapData");
+vector<vector<float>> ICE::En_FC = data_loader::get_2d_data("src/advanced_ecms/data/En_FC");
 
 //  battery configuration
 float MG::SOC = 0.6;
@@ -31,16 +31,16 @@ float MG::Bat_NumCell = 168;
 float MG::Bat_Quantity = 6.5;
 float MG::P_aux = 400; // [V]
 
-vector<float> MG::Bat_indexVoc = data_loader::get_1d_data("src/ADVANCED_ECMS/data/Bat_indexVoc");
-vector<float> MG::Bat_indexSoc = data_loader::get_1d_data("src/ADVANCED_ECMS/data/Bat_indexSOC");
-vector<float> MG::Bat_indexRint = data_loader::get_1d_data("src/ADVANCED_ECMS/data/Bat_indexRint");
+vector<float> MG::Bat_indexVoc = data_loader::get_1d_data("src/advanced_ecms/data/Bat_indexVoc");
+vector<float> MG::Bat_indexSoc = data_loader::get_1d_data("src/advanced_ecms/data/Bat_indexSOC");
+vector<float> MG::Bat_indexRint = data_loader::get_1d_data("src/advanced_ecms/data/Bat_indexRint");
 
 // Motor map
-vector<float> MG::MG_mapTrq = data_loader::get_1d_data("src/ADVANCED_ECMS/data/MG_mapTrq");
-vector<float> MG::MG_mapRPM = Tool::rpm2rs( data_loader::get_1d_data("src/ADVANCED_ECMS/data/MG_mapRPM") );
-vector<float> MG::MG_maxTrq = data_loader::get_1d_data("src/ADVANCED_ECMS/data/MG_maxTrq");
-vector<float> MG::MG_maxRPM = Tool::rpm2rs( data_loader::get_1d_data("src/ADVANCED_ECMS/data/MG_maxRPM") );
-vector<vector<float>> MG::MG_mapData = data_loader::get_2d_data("src/ADVANCED_ECMS/data/MG_mapData");
+vector<float> MG::MG_mapTrq = data_loader::get_1d_data("src/advanced_ecms/data/MG_mapTrq");
+vector<float> MG::MG_mapRPM = Tool::rpm2rs( data_loader::get_1d_data("src/advanced_ecms/data/MG_mapRPM") );
+vector<float> MG::MG_maxTrq = data_loader::get_1d_data("src/advanced_ecms/data/MG_maxTrq");
+vector<float> MG::MG_maxRPM = Tool::rpm2rs( data_loader::get_1d_data("src/advanced_ecms/data/MG_maxRPM") );
+vector<vector<float>> MG::MG_mapData = data_loader::get_2d_data("src/advanced_ecms/data/MG_mapData");
 
 // Voc Rint estimation
 float MG::Voc  = Tool::Voc(false);

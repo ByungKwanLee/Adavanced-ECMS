@@ -4,8 +4,7 @@
 
 using namespace std;
 
-namespace LBK
-{
+
 
 class interp_Tool
 {
@@ -17,5 +16,5 @@ public:
 		vector<vector<float>> & zData, float x, float y);
 };
 
-}
+
 
