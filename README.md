@@ -1,4 +1,4 @@
-# ADVANCED_ECMS (Real-Time processing by ROS)
+# Adavanced_ECMS (Real-Time processing by ROS)
 - **Author  : `ByungKwan Lee` (leebk@kaist.ac.kr)    M.S. Candidate**
 - **Support : `KyungJae Nam`  (tuta4048@kaist.ac.kr) M.S. Candidate**
 - **Advisor : `DongSuk Kum`   (dskum@kaist.ac.kr)    Professor**
