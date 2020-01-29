@@ -1,7 +1,6 @@
 # ADVANCED_ECMS (Real-Time processing by ROS)
-- **Author  : `ByungKwan Lee` (leebk@kaist.ac.kr)    M.S. Candidate**
-- **Support : `KyungJae Nam`  (tuta4048@kaist.ac.kr) M.S. Candidate**
-- **Advisor : `DongSuk Kum`   (dskum@kaist.ac.kr)    Professor**
+- **Author  : `Byung-Kwan Lee` (leebk@kaist.ac.kr)    M.S. Candidate**
+- **Support : `Kyungjae Nam`  (tuta4048@kaist.ac.kr) M.S. Candidate**
 
 ## Requirements
 - ROS kinetic version
